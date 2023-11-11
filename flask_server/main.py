@@ -8,7 +8,7 @@ app = Flask(__name__)  # Flask constructor
 # which URL is associated function
 @app.route('/')
 def hello():
-    return render_template("first.html")
+    return render_template("login.html")
 
 
 @app.route('/admin')
@@ -38,7 +38,7 @@ def login():
     return redirect(url_for('hello_user', name=user))
 
 
-@app.route('/marks')
+@app.route('/oceny')
 def student():
     return render_template("student.html")
 
@@ -48,6 +48,26 @@ def result():
     if request.method == 'POST':
         result = request.form
         return render_template("result.html", result=result)
+
+
+@app.route('/marks')
+def oceny():
+    return render_template("marks.html")
+
+
+@app.route('/plan')
+def plan():
+    return render_template("plan.html")
+
+
+@app.route('/announces')
+def announces():
+    return render_template("announces.html")
+
+
+@app.route('/profile')
+def profile():
+    return render_template("profile.html")
 
 
 if __name__ == '__main__':
