@@ -1,6 +1,5 @@
-# an object of WSGI application
+import requests
 from flask import *  # Flask, redirect, url_for
-
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user
 
@@ -20,11 +19,11 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-# Create user model
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(250), unique=True, nullable=False)
     password = db.Column(db.String(250), nullable=False)
+    # user_type = db.Column(db.String(250), nullable=False)
 
 
 # Initialize app with extension
@@ -43,7 +42,6 @@ def loader_user(user_id):
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
-    # If the user made a POST request, create a new user
     if request.method == "POST":
         user = Users(username=request.form.get("username"),
                      password=request.form.get("password"))
@@ -70,6 +68,8 @@ def login():
         if user.password == request.form.get("password"):
             # Use the login_user method to log in the user
             login_user(user)
+            session['username'] = request.form['username']
+            # session['user_type'] = request.form.get("user_type")
             return redirect(url_for("oceny"))
     # Redirect the user back to the home
     # (we'll create the home route in a moment)
@@ -84,7 +84,6 @@ def logout():
 
 @app.route("/")
 def home():
-    # Render home.html on "/" route
     return render_template("home.html")
 
 
