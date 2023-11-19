@@ -1,0 +1,5 @@
+1. Ściągnij Postgres16 i PgAdmin
+2. Stwórz serwer localhost port:5433
+3. zaimportuj bazę (https://medium.com/@cheshtadhamija/importing-and-exporting-database-in-postgres-using-pgadmin-ce83e0c9002f )
+4. Można używać 
+
