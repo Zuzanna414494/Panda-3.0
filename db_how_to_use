@@ -1,6 +1,12 @@
 1. Ściągnij Postgres16 i PgAdmin
 2. Stwórz serwer localhost port:5433
-3. zaimportuj bazę (użyj pliku dziennik.sql , instrukcja w linku)
-https://medium.com/@cheshtadhamija/importing-and-exporting-database-in-postgres-using-pgadmin-ce83e0c9002f 
+3. zaimportuj bazę (https://medium.com/@cheshtadhamija/importing-and-exporting-database-in-postgres-using-pgadmin-ce83e0c9002f )
+[postgresql]
+host=localhost
+database=dziennik_db
+user=postgres
+password=malibu
+port=5433
+takie mają być dane, żeby to działało
 4. Można używać 
 
