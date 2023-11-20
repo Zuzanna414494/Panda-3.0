@@ -1,4 +1,4 @@
-import requests
+#import requests
 from flask import *  # Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user
