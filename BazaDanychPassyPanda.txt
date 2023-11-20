@@ -1,0 +1,8 @@
+Hostname: dpg-cldiadbmot1c73dot240-a
+Port: 5432
+Database: dziennik_baza
+Username: dziennik_baza_user
+Password: MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc
+Internal: postgres://dziennik_baza_user:MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc@dpg-cldiadbmot1c73dot240-a/dziennik_baza
+External: postgres://dziennik_baza_user:MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc@dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com/dziennik_baza
+Psql cmd: PGPASSWORD=MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc psql -h dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com -U dziennik_baza_user dziennik_baza
