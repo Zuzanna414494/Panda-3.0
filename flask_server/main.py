@@ -70,7 +70,7 @@ def login():
             login_user(user)
             session['username'] = request.form['username']
             # session['user_type'] = request.form.get("user_type")
-            return redirect(url_for("oceny"))
+            return redirect(url_for("grades"))
     # Redirect the user back to the home
     # (we'll create the home route in a moment)
     return render_template("login.html")
@@ -87,50 +87,47 @@ def home():
     return render_template("home.html")
 
 
-################################################################################
-
-
-@app.route('/admin')
-def hello_admin():
-    return 'Hello Admin!'
-
-
-@app.route('/guest/<guest>')
-def hello_guest(guest):
-    return 'Hello %s as Guest!' % guest
-
-
-# albo tak zamiast route:  app.add_url_rule('/', 'hello', hello_world)
-
-
-@app.route('/user/<name>')
-def hello_user(name):
-    if name == 'admin':
-        return redirect(url_for('hello_admin'))
-    else:
-        return redirect(url_for('hello_guest', guest=name))
-
+# @app.route('/admin')
+# def hello_admin():
+#     return 'Hello Admin!'
+#
+#
+# @app.route('/guest/<guest>')
+# def hello_guest(guest):
+#     return 'Hello %s as Guest!' % guest
+#
+#
+# # albo tak zamiast route:  app.add_url_rule('/', 'hello', hello_world)
+#
+#
+# @app.route('/user/<name>')
+# def hello_user(name):
+#     if name == 'admin':
+#         return redirect(url_for('hello_admin'))
+#     else:
+#         return redirect(url_for('hello_guest', guest=name))
+#
 
 # @app.route('/login', methods=['POST'])
 # def login():
 #     user = request.form['name']
 #     return redirect(url_for('hello_user', name=user))
-
-
-@app.route('/oceny')
-def student():
-    return render_template("student.html")
-
-
-@app.route('/result', methods=['POST', 'GET'])
-def result():
-    if request.method == 'POST':
-        result = request.form
-        return render_template("result.html", result=result)
+#
+#
+# @app.route('/oceny')
+# def student():
+#     return render_template("student.html")
+#
+#
+# @app.route('/result', methods=['POST', 'GET'])
+# def result():
+#     if request.method == 'POST':
+#         result = request.form
+#         return render_template("result.html", result=result)
 
 
 @app.route('/grades')
-def oceny():
+def grades():
     return render_template("grades.html")
 
 
