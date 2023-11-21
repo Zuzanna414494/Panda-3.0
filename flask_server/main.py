@@ -2,6 +2,7 @@
 from flask import *  # Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user
+from Utils import Utils
 
 app = Flask(__name__)  # Flask constructor
 
@@ -17,7 +18,6 @@ db = SQLAlchemy()
 # to be able to log in and out users
 login_manager = LoginManager()
 login_manager.init_app(app)
-
 
 class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -147,4 +147,14 @@ def profile():
 
 
 if __name__ == '__main__':
+    utils = Utils()
+    szczesliwy_numer = utils.losuj_i_zapisz_numer()
+    print(f'Szczęśliwy numer: {szczesliwy_numer}')
+
+    # Odczytaj szczęśliwy numer z pliku
+    numer_z_pliku = utils.odczytaj_szczesliwy_numer()
+    print(f'Odczytany szczęśliwy numer: {numer_z_pliku}')
+
     app.run(debug=True)
+
+
