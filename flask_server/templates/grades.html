@@ -194,8 +194,13 @@
 
 
   <div class="container">
+  {% if session.user_type != 'teacher' %}
+      {% if session.user_type == 'student'%}
+            <h1>Your grades</h1>
+      {% else %}
+            <h1>Your child's grades</h1>
+      {% endif %}
 
-    <h1>Your grades</h1>
     <br>
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col"><b>SUBJECT</b></div>
@@ -206,31 +211,56 @@
 
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col">Maths</div>
-      <div class="col-md-6 themed-grid-col">.col-md-6</div>
-      <div class="col-md-3 themed-grid-col">.col-md-3</div>
+      <div class="col-md-6 themed-grid-col">
+{#          {% for row in session.grades %}#}
+{#              {% if row[1] == 'biologia' %}#}
+{#              {{ row[0] }}#}
+{#              {% endif %}#}
+{#          {% endfor %}#}
+          {% for row in session.mat_grades %}
+                {{ row }}
+            {% endfor %}
+      </div>
+      <div class="col-md-3 themed-grid-col">{{ session.mat_ave }}</div>
     </div>
         <hr>
 
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col">Biology</div>
-      <div class="col-md-6 themed-grid-col">.col-md-6</div>
-      <div class="col-md-3 themed-grid-col">.col-md-3</div>
+      <div class="col-md-6 themed-grid-col">
+            {% for row in session.bio_grades %}
+                {{ row }}
+            {% endfor %}
+
+      </div>
+      <div class="col-md-3 themed-grid-col">{{ session.bio_ave }}</div>
     </div>
     <hr>
 
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col">Chemistry</div>
-      <div class="col-md-6 themed-grid-col">.col-md-6</div>
-      <div class="col-md-3 themed-grid-col">.col-md-3</div>
+      <div class="col-md-6 themed-grid-col">
+          {% for row in session.che_grades %}
+                {{ row }}
+            {% endfor %}
+      </div>
+      <div class="col-md-3 themed-grid-col">{{ session.che_ave }}</div>
     </div>
     <hr>
 
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col">Physics</div>
-      <div class="col-md-6 themed-grid-col">.col-md-6</div>
-      <div class="col-md-3 themed-grid-col">.col-md-3</div>
+      <div class="col-md-6 themed-grid-col">
+          {% for row in session.phi_grades %}
+                {{ row }}
+            {% endfor %}
+      </div>
+      <div class="col-md-3 themed-grid-col">{{ session.phi_ave }}</div>
     </div>
     <hr>
+
+  {% endif %}
+
 
 
 
