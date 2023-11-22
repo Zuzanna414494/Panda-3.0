@@ -7,4 +7,3 @@ class Teachers(db.Model, UserMixin):
     surname = db.Column(db.String(80), nullable=False)
     classroom_nr = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(80), nullable=False)
-    subject_id = db.Column(db.Integer, nullable=False)

@@ -4,6 +4,7 @@ from flask_login import login_user, logout_user
 from StudentsClass import *
 from TeachersClass import *
 from UsersClass import *
+from ParentsClass import *
 
 
 # Odtąd działa stara wersja# # ################################################################################
@@ -73,9 +74,34 @@ def login():
 
             if user.user_type == 'student':
                 student = Students.query.filter_by(student_id=user.user_id).first()
+                session['student_id'] = student.student_id
                 session['name'] = student.name
                 session['surname'] = student.surname
                 session['gradebook_nr'] = student.gradebook_nr
+                session['class_name'] = student.class_name
+                session['date_of_birth'] = student.date_of_birth
+                session['place_of_birth'] = student.place_of_birth
+                session['address'] = student.address
+
+                # cur = con.cursor()
+                # cur.execute("SELECT * FROM dataset")
+                # data = cur.fetchall()
+
+            if user.user_type == 'parent':
+                parent = Parents.query.filter_by(parent_id=user.user_id).first()
+                session['parent_id'] = parent.parent_id
+                session['name'] = parent.name
+                session['surname'] = parent.surname
+
+                session['child_id'] = parent.student_id
+                child = Students.query.filter_by(student_id=parent.student_id).first()
+                session['child_name'] = child.name
+                session['child_surname'] = child.surname
+                session['child_gradebook_nr'] = child.gradebook_nr
+                session['child_class_name'] = child.class_name
+                session['child_date_of_birth'] = child.date_of_birth
+                session['child_place_of_birth'] = child.place_of_birth
+                session['child_address'] = child.address
 
             return redirect(url_for("profile"))
     return render_template("login.html")
