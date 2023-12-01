@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+
+{% block content %}
+<main>
+  <h1 class="visually-hidden">Headers examples</h1>
+        {% include "header.html" %}
+
+  <div class="container">
+
+        <h1>Create an account</h1>
+        <form action="#" method="post">
+
+            <div class="form-floating">
+			    <input type="text"
+                       class="form-control"
+                       id="username"
+                       name="username"
+                       placeholder="Username"/>
+                <label for="username">Username</label>
+
+            </div>
+
+            <div class="form-floating">
+			    <input type="password"
+                       class="form-control"
+                       id="password"
+                       name="password"
+                       placeholder="Password"/>
+                <label for="password">Password</label>
+            </div>
+
+<!--            <label for="user_type">User type</label>-->
+<!--			<input type="text" class="form-control" name="user_type"/>-->
+
+    		    <button class="btn btn-primary w-100 py-2" type="submit">Register</button>
+        </form>
+  </div>
+</main>
+{% endblock %}
+
+
