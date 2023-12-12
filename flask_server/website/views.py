@@ -21,10 +21,10 @@ def plan():
     return render_template("plan.html")
 
 
-@views.route('/announces')
+@views.route('/announcements')
 @login_required
-def announces():
-    return render_template("announces.html")
+def announcements():
+    return render_template("announcements.html")
 
 
 @views.route('/profile')
