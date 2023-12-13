@@ -1,17 +1,15 @@
 import psycopg2
-import requests
 from flask import *
 from flask_login import login_user, logout_user, login_required, current_user
 from .models import *
 from werkzeug.security import generate_password_hash, check_password_hash
-import datetime
-# from readGrades import readGrades
 
 
 auth = Blueprint('auth', __name__)
 
 
 @auth.route('/sign-up', methods=["GET", "POST"])
+@login_required
 def sign_up():
     if request.method == "POST":
         # generate_password_hash(request.form.get("password"), method='sha256')
@@ -26,8 +24,8 @@ def sign_up():
                      logged_in=False)
         db.session.add(new_user)
         db.session.commit()
-
         user_id = new_user.user_id
+
         if user_type == "student":
             new_student = Students(student_id=user_id,
                                    name=request.form.get("name"),
@@ -65,8 +63,7 @@ def login():
     if request.method == "POST":
         user = Users.query.filter_by(
             login=request.form.get("username")).first()
-        if user.password == request.form.get("password"):
-        # if check_password_hash(user.password, request.form.get("password")):
+        if check_password_hash(user.password, request.form.get("password")):
             login_user(user, remember=True)
             session['username'] = request.form['username']
             session['password'] = request.form['password']
