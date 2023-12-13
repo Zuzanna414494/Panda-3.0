@@ -12,119 +12,138 @@
 
   <div class="my-3 p-3 bg-body rounded shadow-sm">
 
-    <div class="d-flex text-body-secondary pt-3">
-      <p class="pb-3 mb-0 small lh-sm border-bottom">
-          <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ session.name }} {{ session.surname }}</h6>
-      </p>
-    </div>
-    <div class="d-flex text-body-secondary pt-3">
-      <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">User type: &emsp;&emsp;{{ session.user_type }}</h6>
-      </p>
-    </div>
-    <div class="d-flex text-body-secondary pt-3">
-      <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">E-mail: &emsp;&emsp;&emsp;{{ session.email }}</h6>
-      </p>
-        </div>
-      <div class="d-flex text-body-secondary pt-3">
-      <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Phone: &emsp;&emsp;&emsp;{{ session.phone }}</h6>
-      </p>
+        {% if user.user_type == 'teacher' %}
+        <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ user.teacher[0].name }} {{ user.teacher[0].surname }}</h6>
+          </p>
         </div>
 
-
-
-        {% if session.user_type == 'teacher' %}
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Classroom: &emsp;&emsp;{{ session.classroom_nr }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Classroom: &emsp;&emsp;{{ user.teacher[0].classroom_nr }}</h6>
       </p>
         </div>
         <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Description: &emsp;&emsp;{{ session.description }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Description: &emsp;&emsp;{{ user.teacher[0].description }}</h6>
       </p>
         </div>
       {% endif %}
 
 
 
-  {% if session.user_type == 'student' %}
+  {% if user.user_type == 'student' %}
+
+      <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ user.student[0].name }} {{ user.student[0].surname }}</h6>
+          </p>
+      </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Gradebook number: &emsp;&emsp;{{ session.gradebook_nr }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Gradebook number: &emsp;&emsp;{{ user.student[0].gradebook_nr }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Class: &emsp;&emsp;{{ session.class_name }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Class: &emsp;&emsp;{{ user.student[0].class_name }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Student id: &emsp;&emsp;{{ session.student_id }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Student id: &emsp;&emsp;{{ user.student[0].student_id }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Date of birth: &emsp;&emsp;{{ session.date_of_birth }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Date of birth: &emsp;&emsp;{{ user.student[0].date_of_birth.strftime("%d %B %Y") }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Place of birth: &emsp;&emsp;{{ session.place_of_birth }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Place of birth: &emsp;&emsp;{{ user.student[0].place_of_birth }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Address: &emsp;&emsp;{{ session.address }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Address: &emsp;&emsp;{{ user.student[0].address }}</h6>
       </p>
         </div>
       {% endif %}
 
 
-  {% if session.user_type == 'parent' %}
+  {% if user.user_type == 'parent' %}
+
+      <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ user.parent[0].name }} {{ user.parent[0].surname }}</h6>
+          </p>
+      </div>
+  {% endif %}
+
+        <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+            <h6 class="border-bottom pb-2 mb-0">User type: &emsp;&emsp;{{ user.user_type }}</h6>
+          </p>
+        </div>
+        <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+            <h6 class="border-bottom pb-2 mb-0">E-mail: &emsp;&emsp;&emsp;{{ user.email }}</h6>
+          </p>
+            </div>
+          <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+            <h6 class="border-bottom pb-2 mb-0">Phone: &emsp;&emsp;&emsp;{{ user.phone_nr }}</h6>
+          </p>
+            </div>
+
+
+    {% if user.user_type == 'parent' %}
+
+        <br>
+        <h3>Your child:</h3>
+
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Child's id: &emsp;&emsp;{{ session.child_id }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Child: &emsp;&emsp;{{ user.parent[0].child.name }} {{ user.parent[0].child.surname }}</h6>
+      </p>
+        </div>
+        <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Child's id: &emsp;&emsp;{{ user.parent[0].student_id }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Child: &emsp;&emsp;{{ session.child_name }} {{ session.child_surname }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Child's gradebook number: &emsp;&emsp;{{ user.parent[0].child.gradebook_nr }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Child's gradebook number: &emsp;&emsp;{{ session.child_gradebook_nr }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Child's class: &emsp;&emsp;{{ user.parent[0].child.class_name }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Child's class: &emsp;&emsp;{{ session.child_class_name }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Child's date of birth: &emsp;&emsp;{{ user.parent[0].child.date_of_birth.strftime("%d %B %Y") }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Child's date of birth: &emsp;&emsp;{{ session.child_date_of_birth }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Child's place of birth: &emsp;&emsp;{{ user.parent[0].child.place_of_birth }}</h6>
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
       <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Child's place of birth: &emsp;&emsp;{{ session.child_place_of_birth }}</h6>
-      </p>
-        </div>
-      <div class="d-flex text-body-secondary pt-3">
-      <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Child's address: &emsp;&emsp;{{ session.child_address }}</h6>
+        <h6 class="border-bottom pb-2 mb-0">Child's address: &emsp;&emsp;{{ user.parent[0].child.address }}</h6>
       </p>
         </div>
 
       {% endif %}
     </div>
 
-          {% if session.user_type == 'teacher' %}
+          {% if user.user_type == 'teacher' %}
           <ul class="nav nav-pills">
         <li class="nav-item"><a href="http://127.0.0.1:5000/sign-up" class="nav-link">Create an account</a></li>
       </ul>

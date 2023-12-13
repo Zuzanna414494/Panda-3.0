@@ -4,11 +4,21 @@
 {% set active_page = "grades" %}
 
 {% block content %}
-    <main>
+<main>
+
+    <script>
+    function Average(...list){
+        let average = "-";
+        if(list.length > 0) {
+            average = list.reduce((a, b) => a + b, 0) / list.length;
+        }
+        return average;
+    }
+</script>
 
   <div class="container">
-  {% if session.user_type != 'teacher' %}
-      {% if session.user_type == 'student'%}
+  {% if user.user_type != 'teacher' %}
+      {% if user.user_type == 'student'%}
             <h1>Your grades</h1>
       {% else %}
             <h1>Your child's grades</h1>
@@ -25,50 +35,80 @@
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col">Maths</div>
       <div class="col-md-6 themed-grid-col">
-{#          {% for row in session.grades %}#}
-{#              {% if row[1] == 'biologia' %}#}
-{#              {{ row[0] }}#}
-{#              {% endif %}#}
-{#          {% endfor %}#}
-          {% for row in session.mat_grades %}
-                {{ row }}
+      <script >
+        let arr = [];
+      </script>
+          {% for grade in child.grades %}
+              {% if grade.subject[0].subject_name == 'matematyka' %}
+                {{ grade.type }}
+                  <script>
+                    arr.push({{ grade.type }});
+                  </script>
+              {% endif %}
             {% endfor %}
+
       </div>
-      <div class="col-md-3 themed-grid-col">{{ session.mat_ave }}</div>
+      <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
     </div>
         <hr>
 
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col">Biology</div>
       <div class="col-md-6 themed-grid-col">
-            {% for row in session.bio_grades %}
-                {{ row }}
+        <script >
+            arr = [];
+      </script>
+          {% for grade in child.grades %}
+              {% if grade.subject[0].subject_name == 'biologia' %}
+                {{ grade.type }}
+                  <script>
+                    arr.push({{ grade.type }});
+                  </script>
+              {% endif %}
             {% endfor %}
 
       </div>
-      <div class="col-md-3 themed-grid-col">{{ session.bio_ave }}</div>
+      <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
     </div>
     <hr>
 
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col">Chemistry</div>
       <div class="col-md-6 themed-grid-col">
-          {% for row in session.che_grades %}
-                {{ row }}
+      <script >
+        arr = [];
+      </script>
+          {% for grade in child.grades %}
+              {% if grade.subject[0].subject_name == 'chemia' %}
+                {{ grade.type }}
+                  <script>
+                    arr.push({{ grade.type }});
+                  </script>
+              {% endif %}
             {% endfor %}
+
       </div>
-      <div class="col-md-3 themed-grid-col">{{ session.che_ave }}</div>
+      <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
     </div>
     <hr>
 
     <div class="row mb-3 text-center">
       <div class="col-md-3 themed-grid-col">Physics</div>
       <div class="col-md-6 themed-grid-col">
-          {% for row in session.phi_grades %}
-                {{ row }}
+      <script >
+        arr = [];
+      </script>
+          {% for grade in child.grades %}
+              {% if grade.subject[0].subject_name == 'fizyka' %}
+                {{ grade.type }}
+                  <script>
+                    arr.push({{ grade.type }});
+                  </script>
+              {% endif %}
             {% endfor %}
+
       </div>
-      <div class="col-md-3 themed-grid-col">{{ session.phi_ave }}</div>
+      <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
     </div>
     <hr>
 
@@ -78,3 +118,4 @@
 </div>
 </main>
 {% endblock %}
+

@@ -3,12 +3,17 @@
       <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto">
         <img class="bi me-4" width="60" height="52" src="/static/panda_ciemny.png">
         <span class="fs-4"><strong>Panda 3.0</strong></span>
-        <span class="fs-6"> &emsp; <strong> Logged as:</strong> {{session.name}} {{session.surname}}</span>
+          {% if user.user_type == 'student' %}
+              <span class="fs-6"> &emsp; <strong> Logged as:</strong> {{user.student[0].name}} {{user.student[0].surname}}</span>
+          {% elif user.user_type == 'teacher' %}
+              <span class="fs-6"> &emsp; <strong> Logged as:</strong> {{user.teacher[0].name}} {{user.teacher[0].surname}}</span>
+          {% elif user.user_type == 'parent' %}
+            <span class="fs-6"> &emsp; <strong> Logged as:</strong> {{user.parent[0].name}} {{user.parent[0].surname}}</span>
+          {% endif %}
         <span class="fs-6">&emsp;&emsp; <strong>Lucky number:</strong> 12 </span>
 
 
       </div>
-<!--class="nav-link"  aria-current="page"-->
       <ul class="nav nav-pills">
         <li class="nav-item"><a href="http://127.0.0.1:5000/grades" class="nav-link {% if active_page=='grades' %}active{%endif %}">Grades</a></li>
         <li class="nav-item"><a href="http://127.0.0.1:5000/plan" class="nav-link {% if active_page=='plan' %}active{%endif %}">Plan</a></li>
