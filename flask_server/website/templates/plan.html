@@ -4,12 +4,102 @@
 {% set active_page = "plan" %}
 
 {% block content %}
-<main>
+    <main>
+<style>
+  /* Styl dla wszystkich wierszy */
+  #allRows tr {
+    height: 64px; /* Ustawiona wysokość */
+  }
+</style>
+  <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered text-center">
+        <thead>
+            <tr>
+                <th style="width: 5%;"></th>
+               <th style="width: 16%; min-width: 100px;">Godzina</th>
+                <th style="width: 16%; min-width: 100px;">Poniedziałek</th>
+                <th style="width: 16%; min-width: 100px;">Wtorek</th>
+                <th style="width: 16%; min-width: 100px;">Środa</th>
+                <th style="width: 16%; min-width: 100px;">Czwartek</th>
+                <th style="width: 16%; min-width: 100px;">Piątek</th>
+            </tr>
+        </thead>
 
-  <div class="container">
-
-    <h1>Your plan</h1>
-    <br>
-   </div>
+        <tbody id="allRows">
+                            <tr id="row1">
+                    <td>1.</td>
+                    <td>8:00 - 8:45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                            <tr id="row2">
+                    <td>2.</td>
+                    <td>9:00 - 9:45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                            <tr id="row3">
+                    <td>3.</td>
+                    <td>10:00 - 10:45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                            <tr id="row4">
+                    <td>4.</td>
+                    <td>11:00 - 11:45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                            <tr id="row5">
+                    <td>5.</td>
+                    <td>12:00 - 12:45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                            <tr id="row6">
+                    <td>6.</td>
+                    <td>13:00 - 13:45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                            <tr id="row7">
+                    <td>7.</td>
+                    <td>14:00 - 14:45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                            <tr id="row8">
+                    <td>8.</td>
+                    <td>15:00 - 15:45</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                    </tbody>
+    </table>
+</div>
 </main>
 {% endblock %}

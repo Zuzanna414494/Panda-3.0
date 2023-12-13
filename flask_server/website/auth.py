@@ -92,7 +92,8 @@ def login():
                 session['child_surname'] = child.surname
                 session['child_gradebook_nr'] = child.gradebook_nr
                 session['child_class_name'] = child.class_name
-                session['child_date_of_birth'] = child.date_of_birth
+                date = child.date_of_birth
+                session['child_date_of_birth'] = date.strftime("%d %B %Y")
                 session['child_place_of_birth'] = child.place_of_birth
                 session['child_address'] = child.address
 
