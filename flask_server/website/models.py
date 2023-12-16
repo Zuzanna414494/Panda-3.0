@@ -65,7 +65,7 @@ class Announcements(db.Model, UserMixin):
 
 class Grades(db.Model, UserMixin):
     grade_id = db.Column(db.Integer, primary_key=True)
-    subject_id = db.Column(db.Integer, nullable=False)
+    subject_id = db.Column(db.Integer, db.ForeignKey('subjects.subject_id'), nullable=False)
     type = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Integer, nullable=False)
     student_id = db.Column(db.Integer, db.ForeignKey('students.student_id'), nullable=False)
@@ -80,4 +80,18 @@ class Subjects(db.Model, UserMixin):
     subject_name = db.Column(db.String(80), nullable=False)
     class_name = db.Column(db.String(80), nullable=False)
     teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.teacher_id'), nullable=False)
+
+class Lessons(db.Model, UserMixin):
+    lesson_id = db.Columnm(db.Integer,primary_key=True)
+    subject_id = db.Column(db.Integer, db.ForeignKey('subjects.subject_id'), nullable=False)
+    day_of_week=db.Column(db.String(15),nullable=False)
+    start_time = db.Column(db.DateTime(timezone=True),nullable=False)
+    end_time = db.Column(db.DateTime(timezone=True), nullable=False)
+    test = db.Column(db.String(80),nullable=True)
+
+class Classes(db.Model, UserMixin):
+    class_name=db.Columnm(db.String(10),primary_key=True)
+    homeroom_teacher_id=db.Column(db.Integer, db.ForeignKey('teachers.teacher_id'), nullable=True)
+    class_profile=db.Column(db.String(50),nullable=False)
+
 
