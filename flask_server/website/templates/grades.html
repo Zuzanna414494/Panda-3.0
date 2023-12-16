@@ -39,7 +39,7 @@
         let arr = [];
       </script>
           {% for grade in child.grades %}
-              {% if grade.subject[0].subject_name == 'matematyka' %}
+              {% if grade.subject[0].subject_name == 'Matematyka' %}
                 {{ grade.type }}
                   <script>
                     arr.push({{ grade.type }});
@@ -59,7 +59,7 @@
             arr = [];
       </script>
           {% for grade in child.grades %}
-              {% if grade.subject[0].subject_name == 'biologia' %}
+              {% if grade.subject[0].subject_name == 'Biologia' %}
                 {{ grade.type }}
                   <script>
                     arr.push({{ grade.type }});
@@ -79,7 +79,7 @@
         arr = [];
       </script>
           {% for grade in child.grades %}
-              {% if grade.subject[0].subject_name == 'chemia' %}
+              {% if grade.subject[0].subject_name == 'Chemia' %}
                 {{ grade.type }}
                   <script>
                     arr.push({{ grade.type }});
@@ -99,7 +99,7 @@
         arr = [];
       </script>
           {% for grade in child.grades %}
-              {% if grade.subject[0].subject_name == 'fizyka' %}
+              {% if grade.subject[0].subject_name == 'Fizyka' %}
                 {{ grade.type }}
                   <script>
                     arr.push({{ grade.type }});
