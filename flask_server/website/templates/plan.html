@@ -1,105 +1,57 @@
 {% extends "base.html" %}
 {% block title %}Plan{% endblock %}
-
 {% set active_page = "plan" %}
 
 {% block content %}
-    <main>
+<main>
 <style>
   /* Styl dla wszystkich wierszy */
   #allRows tr {
     height: 64px; /* Ustawiona wysokość */
   }
 </style>
-  <div class="table-responsive">
-    <table class="table table-sm table-striped table-bordered text-center">
-        <thead>
-            <tr>
-                <th style="width: 5%;"></th>
-               <th style="width: 16%; min-width: 100px;">Godzina</th>
-                <th style="width: 16%; min-width: 100px;">Poniedziałek</th>
-                <th style="width: 16%; min-width: 100px;">Wtorek</th>
-                <th style="width: 16%; min-width: 100px;">Środa</th>
-                <th style="width: 16%; min-width: 100px;">Czwartek</th>
-                <th style="width: 16%; min-width: 100px;">Piątek</th>
-            </tr>
-        </thead>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered text-center">
+            <thead>
+                <tr>
+                     <th style="width: 5%;"></th>
+                <th style="width: 16%; min-width: 100px;">Time</th>
+                <th style="width: 16%; min-width: 100px;">Monday</th>
+                <th style="width: 16%; min-width: 100px;">Tuesday</th>
+                <th style="width: 16%; min-width: 100px;">Wednesday</th>
+                <th style="width: 16%; min-width: 100px;">Thursday</th>
+                <th style="width: 16%; min-width: 100px;">Friday</th>
+                </tr>
+            </thead>
+              <tbody id="allRows">
+                {% set time_slots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'] %}
+                {% set end_time_slots = ['08:45', '09:45', '10:45', '11:45', '12:45', '13:45', '14:45', '15:45'] %}
+                {% for time_slot in time_slots %}
+                    <tr>
+                       <td>{{ loop.index }}</td>
+                        <td>{{ time_slot }} - {{ end_time_slots[loop.index - 1] }}</td>
+                        {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+                            <td>
+                                {% for lesson in zajecia %}
+                                    {% if lesson['day_of_week'] == day and lesson['start_time'] == time_slot %}
+                                        {{ lesson['subject'] }}
+                                        ({{ lesson['building'] }}) <br>
+                                        {% if lesson['test'] is not none %}
+                                        <span style="color: red;">{{ lesson['test'] }}</span>
+                                        {% endif %}
 
-        <tbody id="allRows">
-                            <tr id="row1">
-                    <td>1.</td>
-                    <td>8:00 - 8:45</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                            <tr id="row2">
-                    <td>2.</td>
-                    <td>9:00 - 9:45</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                            <tr id="row3">
-                    <td>3.</td>
-                    <td>10:00 - 10:45</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                            <tr id="row4">
-                    <td>4.</td>
-                    <td>11:00 - 11:45</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                            <tr id="row5">
-                    <td>5.</td>
-                    <td>12:00 - 12:45</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                            <tr id="row6">
-                    <td>6.</td>
-                    <td>13:00 - 13:45</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                            <tr id="row7">
-                    <td>7.</td>
-                    <td>14:00 - 14:45</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                            <tr id="row8">
-                    <td>8.</td>
-                    <td>15:00 - 15:45</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                    </tbody>
-    </table>
-</div>
+                                    {% else %}
+
+                                        {# Jeśli nie ma zajęć o danej godzinie i dniu, wstaw pustą komórkę #}
+                                    {% endif %}
+
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </main>
 {% endblock %}

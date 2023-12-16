@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, render_template
 from flask_login import login_required, current_user
 from .models import *
+from .plan_working import readLessons
 
 views = Blueprint('views', __name__)
 
@@ -24,7 +25,14 @@ def grades():
 @views.route('/plan')
 @login_required
 def plan():
-    return render_template("plan.html", user=current_user)
+
+    child = None
+    if current_user.user_type == 'parent':
+        child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
+        zajecia=readLessons(child.student_id)
+    else:
+        zajecia=readLessons(current_user.user_id)
+    return render_template("plan.html", user=current_user, zajecia=zajecia)
 
 
 @views.route('/announcements')
