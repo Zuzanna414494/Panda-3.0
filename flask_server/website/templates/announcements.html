@@ -5,6 +5,11 @@
 {% set active_page = "announcements" %}
 
 {% block content %}
+     <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
 <main>
   <div class="container">
 
@@ -14,7 +19,7 @@
     {% for announcement in filtered_announcements %}
     <div class="announcement-details">
         <a href="{{ url_for('views.announcement_details', announcement_id=announcement.announcement_id) }}">
-            <h3>{{ announcement.description }}</h3>
+            <h4>{{ announcement.title() }}</h4>
         </a>
         Date: {{ announcement.add_date }} &nbsp;&nbsp;
         Teacher ID: {{ announcement.teacher_name() }}

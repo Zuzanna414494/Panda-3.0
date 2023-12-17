@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 
 {% block title %}Announcement Details{% endblock %}
-
 {% block content %}
 <main>
   <div class="container">
     <h1>Announcement Details</h1>
     <div class="announcement-details">
-        <h2>{{ announcement.description }}</h2>
+        <p>{{ announcement.description }}</p>
         <p>Date: {{ announcement.add_date }}</p>
-        <p>Teacher ID: {{ announcement.teacher_id }}</p>
+        <p>Teacher ID: {{ announcement.teacher_name() }}</p>
         <!-- Dodaj inne szczegóły ogłoszenia, jeśli są dostępne -->
     </div>
   </div>
