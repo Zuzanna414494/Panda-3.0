@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% block title %}Announcements{% endblock %}
 
 {% set active_page = "announcements" %}
@@ -9,6 +10,18 @@
 
     <h1>Announcements</h1>
     <br>
- </div>
+
+    {% for announcement in filtered_announcements %}
+    <div class="announcement-details">
+        <a href="{{ url_for('views.announcement_details', announcement_id=announcement.announcement_id) }}">
+            <h3>{{ announcement.description }}</h3>
+        </a>
+        Date: {{ announcement.add_date }} &nbsp;&nbsp;
+        Teacher ID: {{ announcement.teacher_name() }}
+    </div>
+{% endfor %}
+
+
+  </div>
 </main>
 {% endblock %}

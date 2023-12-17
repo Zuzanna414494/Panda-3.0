@@ -2,28 +2,6 @@ import psycopg2
 from .models import *
 from flask_login import current_user
 
-def get_plan():
-    days_of_week=[]
-
-    monday = []
-    tuesday=[]
-    wednesday=[]
-    thursday=[]
-    friday=[]
-
-    days_of_week=[monday,tuesday,wednesday,thursday,friday]
-
-    for x in range(1,9):
-        monday.append("null")
-        tuesday.append("null")
-        wednesday.append("null")
-        thursday.append("null")
-        friday.append("null")
-
-    print(days_of_week)
-
-#get_plan()
-
 def readLessons(user_id_l):
     con = psycopg2.connect(database="dziennik_baza",
                            user="dziennik_baza_user",
