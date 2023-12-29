@@ -10,7 +10,7 @@
           {% elif user.user_type == 'parent' %}
             <span class="fs-6"> &emsp; <strong> Logged as:</strong> {{user.parent[0].name}} {{user.parent[0].surname}}</span>
           {% endif %}
-        <span class="fs-6">&emsp;&emsp; <strong>Lucky number:</strong> 12 </span>
+        <span class="fs-6">&emsp;&emsp; <strong>Lucky number:</strong> {{ lucky_number }} </span>
 
 
       </div>

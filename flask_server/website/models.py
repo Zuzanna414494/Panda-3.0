@@ -62,6 +62,14 @@ class Announcements(db.Model, UserMixin):
     in_archive = db.Column(db.Boolean)
     teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.teacher_id'))
 
+    def teacher_name(self):
+        # Tutaj pobierz nazwę nauczyciela na podstawie teacher_id
+        teacher = Teachers.query.filter_by(teacher_id=self.teacher_id).first()
+        full_name=teacher.name+" "+teacher.surname
+        return full_name if teacher else None
+    def title(self):
+        return self.description.split('.', 1)[0]
+
 
 class Grades(db.Model, UserMixin):
     grade_id = db.Column(db.Integer, primary_key=True)

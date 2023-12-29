@@ -1,6 +1,7 @@
 from flask import Flask, redirect
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from .LuckyNumberGenerator import generateLuckyNumber
 
 db = SQLAlchemy()
 
@@ -34,4 +35,9 @@ def create_app():
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
         return response
 
+
+    @app.context_processor
+    def inject_lucky_number():
+        number = generateLuckyNumber()
+        return dict(lucky_number=number)
     return app

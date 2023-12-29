@@ -1,14 +1,32 @@
 {% extends "base.html" %}
+
 {% block title %}Announcements{% endblock %}
 
 {% set active_page = "announcements" %}
 
 {% block content %}
+     <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
 <main>
   <div class="container">
 
     <h1>Announcements</h1>
     <br>
- </div>
+
+    {% for announcement in filtered_announcements %}
+    <div class="announcement-details">
+        <a href="{{ url_for('views.announcement_details', announcement_id=announcement.announcement_id) }}">
+            <h4>{{ announcement.title() }}</h4>
+        </a>
+        Date: {{ announcement.add_date }} &nbsp;&nbsp;
+        Teacher ID: {{ announcement.teacher_name() }}
+    </div>
+{% endfor %}
+
+
+  </div>
 </main>
 {% endblock %}
