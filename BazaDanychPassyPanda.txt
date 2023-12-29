@@ -1,4 +1,5 @@
-Hostname: dpg-cldiadbmot1c73dot240-a
+# Hostname: dpg-cldiadbmot1c73dot240-a
+Host: dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com
 Port: 5432
 Database: dziennik_baza
 Username: dziennik_baza_user

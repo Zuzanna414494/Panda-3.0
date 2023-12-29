@@ -25,13 +25,11 @@ def grades():
 @views.route('/plan')
 @login_required
 def plan():
-
-    child = None
     if current_user.user_type == 'parent':
         child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
-        zajecia=readLessons(child.student_id)
+        zajecia = readLessons(child.student_id)
     else:
-        zajecia=readLessons(current_user.user_id)
+        zajecia = readLessons(current_user.user_id)
     return render_template("plan.html", user=current_user, zajecia=zajecia)
 
 

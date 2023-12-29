@@ -10,6 +10,17 @@
     height: 64px; /* Ustawiona wysokość */
   }
 </style>
+
+  <div class="container">
+ {% if user.user_type != 'teacher' %}
+      {% if user.user_type == 'student'%}
+            <h1>Your plan</h1>
+      {% else %}
+            <h1>Your child's plan</h1>
+      {% endif %}
+  {% endif %}
+  <br>
+
     <div class="table-responsive">
         <table class="table table-sm table-striped table-bordered text-center">
             <thead>
@@ -36,7 +47,7 @@
                                     {% if lesson['day_of_week'] == day and lesson['start_time'] == time_slot %}
                                         {{ lesson['subject'] }}
                                         ({{ lesson['building'] }}) <br>
-                                        {% if lesson['test'] is not none %}
+                                        {% if lesson['test'] != 'None' %}
                                         <span style="color: red;">{{ lesson['test'] }}</span>
                                         {% endif %}
 
@@ -53,5 +64,6 @@
             </tbody>
         </table>
     </div>
+  </div>
 </main>
 {% endblock %}

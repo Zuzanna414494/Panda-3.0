@@ -2,18 +2,19 @@ import psycopg2
 from .models import *
 from flask_login import current_user
 
+
 def get_plan():
-    days_of_week=[]
+    days_of_week = []
 
     monday = []
-    tuesday=[]
-    wednesday=[]
-    thursday=[]
-    friday=[]
+    tuesday = []
+    wednesday = []
+    thursday = []
+    friday = []
 
-    days_of_week=[monday,tuesday,wednesday,thursday,friday]
+    days_of_week = [monday, tuesday, wednesday, thursday, friday]
 
-    for x in range(1,9):
+    for x in range(1, 9):
         monday.append("null")
         tuesday.append("null")
         wednesday.append("null")
@@ -22,7 +23,8 @@ def get_plan():
 
     print(days_of_week)
 
-#get_plan()
+
+# get_plan()
 
 def readLessons(user_id_l):
     con = psycopg2.connect(database="dziennik_baza",
@@ -76,7 +78,7 @@ def readLessons(user_id_l):
         # Konwertuj każdą krotkę na łańcuch, łącząc jej elementy za pomocą przecinków
         line_str = ', '.join(map(str, line))
         # Teraz możemy podzielić łańcuch na poszczególne części
-        subject,day_of_week, start_time, end_time, building, test = line_str.split(", ")
+        subject, day_of_week, start_time, end_time, building, test = line_str.split(", ")
         lesson = {
             "subject": subject,
             "day_of_week": day_of_week,
@@ -87,4 +89,3 @@ def readLessons(user_id_l):
         }
         zajecia.append(lesson)
     return zajecia
-
