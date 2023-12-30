@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+
+{% block content %}
+<main>
+<style>
+    /* Styl dla niestandardowego pola textarea */
+    form textarea.form-control{
+        height: 500px;
+    }
+</style>
+ <div class="container">
+    <h1>Create an announcement</h1>
+    <br>
+    <form action="#" method="post">
+        <div class="form-floating">
+            <textarea class="form-control" id="description" name="description" placeholder="Enter description"
+                      style="height: 465px;"
+                      onkeydown="if(event.keyCode === 13) {event.preventDefault(); this.value += '\n';} "></textarea>
+        </div>
+        <button class="btn btn-primary w-100 py-2" type="submit">Add</button>
+    </form>
+</div>
+
+</main>
+{% endblock %}
+
+
