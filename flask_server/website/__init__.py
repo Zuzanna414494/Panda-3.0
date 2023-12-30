@@ -10,7 +10,8 @@ def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "ENTER YOUR SECRET KEY"
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dziennik_baza_user:MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc@dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com/dziennik_baza'
+    app.config[
+        'SQLALCHEMY_DATABASE_URI'] = 'postgresql://dziennik_baza_user:MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc@dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com/dziennik_baza'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
@@ -35,9 +36,9 @@ def create_app():
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
         return response
 
-
     @app.context_processor
     def inject_lucky_number():
         number = generateLuckyNumber()
         return dict(lucky_number=number)
+
     return app

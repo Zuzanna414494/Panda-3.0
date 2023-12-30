@@ -14,7 +14,13 @@
         }
         return average;
     }
+    let arr = [];
 </script>
+
+
+
+{% set subjects = ['Matematyka', 'Biologia', 'Chemia', 'Fizyka'] %}
+{% set names = ['Maths', 'Biology', 'Chemistry', 'Physics'] %}
 
   <div class="container">
   {% if user.user_type != 'teacher' %}
@@ -32,86 +38,48 @@
     </div>
     <hr>
 
-    <div class="row mb-3 text-center">
-      <div class="col-md-3 themed-grid-col">Maths</div>
+    {% for subject in subjects %}
+     <div class="row mb-3 text-center">
+      <div class="col-md-3 themed-grid-col">{{ names[loop.index - 1] }}</div>
       <div class="col-md-6 themed-grid-col">
       <script >
-        let arr = [];
+        arr = [];
       </script>
           {% for grade in child.grades %}
-              {% if grade.subject.subject_name == 'Matematyka' %}
-                {{ grade.type }}
+              {% if grade.subject.subject_name == subject %}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal{{ loop.index }}">{{ grade.type }}</button>
                   <script>
                     arr.push({{ grade.type }});
                   </script>
               {% endif %}
+              <!-- Modal -->
+                    <div class="modal fade" id="grade-modal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content rounded-4 shadow">
+                          <div class="modal-header border-bottom-0">
+                            <h1 class="modal-title fs-5">{{ grade.subject.subject_name }}</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                              <div class="modal-body py-0">
+                                <p>Grade: {{ grade.type }}</p>
+                                <br>
+                                <p>Weight: {{ grade.weight }}</p>
+                                <br>
+                                <p>Description: {{ grade.description }}</p>
+                                <br>
+                                <p>Date: {{ grade.add_date }}</p>
+                                <br>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
             {% endfor %}
 
       </div>
       <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
     </div>
         <hr>
-
-    <div class="row mb-3 text-center">
-      <div class="col-md-3 themed-grid-col">Biology</div>
-      <div class="col-md-6 themed-grid-col">
-        <script >
-            arr = [];
-      </script>
-          {% for grade in child.grades %}
-              {% if grade.subject.subject_name == 'Biologia' %}
-                {{ grade.type }}
-                  <script>
-                    arr.push({{ grade.type }});
-                  </script>
-              {% endif %}
-            {% endfor %}
-
-      </div>
-      <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
-    </div>
-    <hr>
-
-    <div class="row mb-3 text-center">
-      <div class="col-md-3 themed-grid-col">Chemistry</div>
-      <div class="col-md-6 themed-grid-col">
-      <script >
-        arr = [];
-      </script>
-          {% for grade in child.grades %}
-              {% if grade.subject.subject_name == 'Chemia' %}
-                {{ grade.type }}
-                  <script>
-                    arr.push({{ grade.type }});
-                  </script>
-              {% endif %}
-            {% endfor %}
-
-      </div>
-      <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
-    </div>
-    <hr>
-
-    <div class="row mb-3 text-center">
-      <div class="col-md-3 themed-grid-col">Physics</div>
-      <div class="col-md-6 themed-grid-col">
-      <script >
-        arr = [];
-      </script>
-          {% for grade in child.grades %}
-              {% if grade.subject.subject_name == 'Fizyka' %}
-                {{ grade.type }}
-                  <script>
-                    arr.push({{ grade.type }});
-                  </script>
-              {% endif %}
-            {% endfor %}
-
-      </div>
-      <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
-    </div>
-    <hr>
-
+    {% endfor %}
   {% endif %}
 
 

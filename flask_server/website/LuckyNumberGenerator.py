@@ -1,6 +1,8 @@
 import random
 import datetime
-#generating lucky number that stays the same during the day and changes the next day
+
+
+# generating lucky number that stays the same during the day and changes the next day
 
 def generateLuckyNumber():
     current_date = datetime.date.today().toordinal()

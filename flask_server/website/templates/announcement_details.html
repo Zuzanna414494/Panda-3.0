@@ -4,11 +4,12 @@
 {% block content %}
 <main>
   <div class="container">
-    <h1>Announcement Details</h1>
+    <h1>Announcement details</h1>
+      <br>
     <div class="announcement-details">
         <p>{{ announcement.description }}</p>
         <p>Date: {{ announcement.add_date }}</p>
-        <p>Teacher ID: {{ announcement.teacher_name() }}</p>
+        <p>Teacher: {{ announcement.teacher_name() }}</p>
         <!-- Dodaj inne szczegóły ogłoszenia, jeśli są dostępne -->
     </div>
   </div>

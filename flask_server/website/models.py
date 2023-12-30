@@ -65,8 +65,9 @@ class Announcements(db.Model, UserMixin):
     def teacher_name(self):
         # Tutaj pobierz nazwę nauczyciela na podstawie teacher_id
         teacher = Teachers.query.filter_by(teacher_id=self.teacher_id).first()
-        full_name=teacher.name+" "+teacher.surname
+        full_name = teacher.name + " " + teacher.surname
         return full_name if teacher else None
+
     def title(self):
         return self.description.split('.', 1)[0]
 

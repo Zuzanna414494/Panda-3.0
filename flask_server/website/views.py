@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template
+from flask import Blueprint, redirect, render_template, url_for
 from flask_login import login_required, current_user
 from .models import *
 from .plan_working import readLessons
@@ -8,7 +8,7 @@ views = Blueprint('views', __name__)
 
 @views.route("/")
 def home():
-    return redirect("http://127.0.0.1:5000/login")
+    return redirect(url_for("auth.login"))
 
 
 @views.route('/grades')
@@ -36,8 +36,8 @@ def plan():
 @views.route('/announcements')
 @login_required
 def announcements():
-    filtered_announcements = Announcements.query.filter(Announcements.in_archive== False).all()
-    return render_template("announcements.html", user=current_user,filtered_announcements=filtered_announcements)
+    filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).all()
+    return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements)
 
 
 @views.route('/announcement/<int:announcement_id>')
@@ -45,7 +45,8 @@ def announcement_details(announcement_id):
     # Tutaj pobierz szczegóły ogłoszenia na podstawie announcement_id
     # Na przykład:
     announcement = Announcements.query.get_or_404(announcement_id)
-    return render_template('announcement_details.html', user=current_user,announcement=announcement)
+    return render_template('announcement_details.html', user=current_user, announcement=announcement)
+
 
 @views.route('/profile')
 @login_required
