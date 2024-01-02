@@ -3,6 +3,9 @@ from flask import *
 from flask_login import login_user, logout_user, login_required, current_user
 from .models import *
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import current_user
+from datetime import datetime
+import markdown2
 
 
 auth = Blueprint('auth', __name__)
@@ -72,3 +75,19 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("auth.login"))
+
+
+@auth.route('/add-announcement', methods=["GET", "POST"])
+@login_required
+def add_announcement():
+    if request.method == "POST":
+        new_announcement = Announcements(
+                     description=request.form.get("description"),
+                     add_date=datetime.now(),
+                     in_archive=False,
+                     teacher_id=current_user.user_id)
+        db.session.add(new_announcement)
+        db.session.commit()
+        announcement_id = new_announcement.announcement_id
+
+    return render_template("add_announcement.html",user=current_user)
