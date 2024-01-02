@@ -1,7 +1,8 @@
+import psycopg2
 from flask import Blueprint, redirect, render_template, url_for
 from flask_login import login_required, current_user
 from .models import *
-from .plan_working import readLessons
+from .plan_working import readLessons, readClasses
 
 views = Blueprint('views', __name__)
 
@@ -14,12 +15,23 @@ def home():
 @views.route('/grades')
 @login_required
 def grades():
+    if current_user.user_type == 'teacher':
+        classes = readClasses()
+        return render_template("grades.html", user=current_user, classes=classes)
+
     child = None
     if current_user.user_type == 'parent':
         child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
     elif current_user.user_type == 'student':
         child = current_user.student[0]
     return render_template("grades.html", user=current_user, child=child)
+
+
+@views.route('/grades/<string:class_name>')
+def grades_teacher(class_name):
+    clas = Classes.query.get_or_404(class_name)
+    classes = readClasses()
+    return render_template('grades_teacher.html', user=current_user, clas=clas, classes=classes)
 
 
 @views.route('/plan')

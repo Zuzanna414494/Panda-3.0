@@ -1,6 +1,6 @@
 import psycopg2
 from flask import *
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from .models import *
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -52,7 +52,7 @@ def sign_up():
         db.session.commit()
         flash('Account created!', category='success')
         return redirect(url_for('views.profile'))
-    return render_template("sign_up.html")
+    return render_template("sign_up.html", user=current_user)
 
 
 @auth.route("/login", methods=["GET", "POST"])

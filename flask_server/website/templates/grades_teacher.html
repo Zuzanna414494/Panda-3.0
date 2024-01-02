@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Grades{% endblock %}
+
+{% set active_page = "grades" %}
+
+{% block content %}
+<main>
+<div class="container">
+{{ clas.class_profile }}
+    <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Choose class</button>
+          <ul class="dropdown-menu">
+              {% for class in classes %}
+                      <li><a class="dropdown-item" href="{{ url_for('views.grades_teacher', class_name=class['class_name'])}}">{{ class['class_name'] }}</a></li>
+              {% endfor %}
+          </ul>
+      </div>
+
+</div>
+</main>
+{% endblock %}

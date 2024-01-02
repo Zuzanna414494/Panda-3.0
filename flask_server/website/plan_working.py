@@ -89,3 +89,30 @@ def readLessons(user_id_l):
         }
         zajecia.append(lesson)
     return zajecia
+
+
+def readClasses():
+    con = psycopg2.connect(database="dziennik_baza",
+                           user="dziennik_baza_user",
+                           password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc",
+                           host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com",
+                           port="5432")
+    cur = con.cursor()
+    cur.execute(
+        "SELECT class_name, class_profile "
+        "FROM classes"
+    )
+    classes_data = cur.fetchall()
+    cur.close()
+    con.close()
+    classes = []
+    for line in classes_data:
+        line_str = ', '.join(map(str, line))
+        class_name, class_profile = line_str.split(", ")
+        x = {
+            "class_name": class_name,
+            "class_profile": class_profile,
+        }
+        classes.append(x)
+    classes.sort(key=lambda d: d['class_name'])
+    return classes
