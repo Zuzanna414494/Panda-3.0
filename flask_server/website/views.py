@@ -69,14 +69,13 @@ def plan():
 @views.route('/announcements')
 @login_required
 def announcements():
-    filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).all()
+    filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).order_by(
+        Announcements.add_date.desc()).all()
     return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements)
 
 
 @views.route('/announcement/<int:announcement_id>')
 def announcement_details(announcement_id):
-    # Tutaj pobierz szczegóły ogłoszenia na podstawie announcement_id
-    # Na przykład:
     announcement = Announcements.query.get_or_404(announcement_id)
     return render_template('announcement_details.html', user=current_user, announcement=announcement)
 

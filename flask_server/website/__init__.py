@@ -2,7 +2,10 @@ from flask import Flask, redirect
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from .LuckyNumberGenerator import generateLuckyNumber
-
+from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime, timedelta
+import time
+from sqlalchemy import and_
 db = SQLAlchemy()
 
 
@@ -41,4 +44,24 @@ def create_app():
         number = generateLuckyNumber()
         return dict(lucky_number=number)
 
+    def archive_old_announcements():
+        with app.app_context():
+            month_ago = datetime.now() - timedelta(days=30)
+            old_announcements = Announcements.query.filter(
+                and_(Announcements.add_date <= month_ago,
+                    Announcements.in_archive == False)
+                ).all()
+            for announcement in old_announcements:
+                announcement.in_archive = True
+                db.session.commit()
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(archive_old_announcements, trigger='cron', hour=0) # Uruchomienie codziennie o
+    # północy
+
+    scheduler.start()
+
     return app
+
+
+
