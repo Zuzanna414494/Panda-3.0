@@ -12,7 +12,7 @@
         if(list.length > 0) {
             average = list.reduce((a, b) => a + b, 0) / list.length;
         }
-        return average;
+        return Math.round(average * 100) / 100;
     }
     let arr = [];
 </script>
@@ -30,7 +30,7 @@
             Choose class</button>
           <ul class="dropdown-menu">
               {% for class in classes %}
-                      <li><a class="dropdown-item" href="{{ url_for('views.grades_teacher', class_name=class['class_name']) }}">{{ class['class_name'] }}</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('views.grades_teacher', class_name=class.class_name) }}">{{ class.class_name }}</a></li>
               {% endfor %}
           </ul>
       </div>
@@ -47,26 +47,26 @@
 
     <br>
     <div class="row mb-3 text-center">
-      <div class="col-md-3 themed-grid-col"><b>SUBJECT</b></div>
-      <div class="col-md-6 themed-grid-col"><b>GRADES</b></div>
-      <div class="col-md-3 themed-grid-col"><b>AVERAGE</b></div>
+      <div class="col-md-2 themed-grid-col"><b>SUBJECT</b></div>
+      <div class="col-md-8 themed-grid-col"><b>GRADES</b></div>
+      <div class="col-md-1 themed-grid-col"><b>AVERAGE</b></div>
+      <div class="col-md-1 themed-grid-col"><b>FINAL</b></div>
     </div>
     <hr>
 
     {% for subject in subjects %}
      <div class="row mb-3 text-center">
-      <div class="col-md-3 themed-grid-col">{{ names[loop.index - 1] }}</div>
-      <div class="col-md-6 themed-grid-col">
+      <div class="col-md-2 themed-grid-col">{{ names[loop.index - 1] }}</div>
+      <div class="col-md-8 themed-grid-col">
       <script >
         arr = [];
       </script>
           {% for grade in child.grades %}
-              {% if grade.subject.subject_name == subject %}
+              {% if grade.subject.subject_name == subject and grade.is_final == false %}
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal{{ loop.index }}">{{ grade.type }}</button>
                   <script>
                     arr.push({{ grade.type }});
                   </script>
-              {% endif %}
               <!-- Modal -->
                     <div class="modal fade" id="grade-modal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -88,10 +88,20 @@
                             </div>
                           </div>
                     </div>
+                {% endif %}
             {% endfor %}
 
       </div>
-      <div class="col-md-3 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
+      <div class="col-md-1 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
+      <div class="col-md-1 themed-grid-col">
+            <script>let final = '-';</script>
+            {% for grade in child.grades %}
+                {% if grade.is_final %}
+                    <script> final = {{ grade.type }}</script>
+                {% endif %}
+            {% endfor %}
+            <script>document.write(final.toString())</script>
+      </div>
     </div>
         <hr>
     {% endfor %}

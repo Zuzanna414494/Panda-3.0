@@ -80,6 +80,7 @@ class Grades(db.Model, UserMixin):
     student_id = db.Column(db.Integer, db.ForeignKey('students.student_id'), nullable=False)
     description = db.Column(db.String(80), nullable=False)
     add_date = db.Column(db.DateTime(timezone=True), default=func.now())
+    is_final = db.Column(db.Boolean, nullable=False)
 
     subject = db.relationship('Subjects')
 

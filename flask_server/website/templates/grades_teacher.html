@@ -1,12 +1,25 @@
 {% extends "base.html" %}
-{% block title %}Grades{% endblock %}
+{% block title %}Grades {{ clas.class_name }}{% endblock %}
 
 {% set active_page = "grades" %}
 
 {% block content %}
 <main>
+
+<script>
+    function Average(...list){
+        let average = "-";
+        if(list.length > 0) {
+            average = list.reduce((a, b) => a + b, 0) / list.length;
+            return Math.round(average * 100) / 100;
+        }
+        else return average
+    }
+    let arr = [];
+</script>
+
+
 <div class="container">
-{{ clas.class_profile }}
     <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Choose class</button>
@@ -16,6 +29,152 @@
               {% endfor %}
           </ul>
       </div>
+
+    <div class="fs-4" align="middle" >Class: {{ clas.class_name }}
+        <br> Profile: {{ clas.class_profile }}
+    </div>
+    <br>
+
+    {% for subject in subjects %}
+        <br>
+        <div class="fs-4"><strong>{{ subject.subject_name }}</strong></div>
+        <br>
+        <br>
+        <div class="row mb-3 text-center">
+            <div class="col-md-1 themed-grid-col"><b>NUMBER</b></div>
+            <div class="col-md-2 themed-grid-col"><b>STUDENT</b></div>
+            <div class="col-md-6 themed-grid-col"><b>GRADES</b></div>
+            <div class="col-md-1 themed-grid-col"><b>AVERAGE</b></div>
+            <div class="col-md-1 themed-grid-col"><b>FINAL</b></div>
+            <div class="col-md-1 themed-grid-col"><b>NEW GRADE</b></div>
+        </div>
+        <hr>
+
+        {% for student in students %}
+             <div class="row mb-3 text-center">
+                 <div class="col-md-1 themed-grid-col">{{ student.gradebook_nr }}</div>
+                 <div class="col-md-2 themed-grid-col">{{ student.name }} {{ student.surname }}</div>
+                 <div class="col-md-6 themed-grid-col">
+
+                  <script >
+                    arr = [];
+                  </script>
+                      {% for grade in student.grades %}
+                          {% if grade.subject.subject_name == subject.subject_name and grade.is_final == false %}
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal{{ loop.index }}">{{ grade.type }}</button>
+                              <script>
+                                arr.push({{ grade.type }});
+                              </script>
+                          <!-- Modal -->
+                                <div class="modal fade" id="grade-modal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content rounded-4 shadow">
+                                      <div class="modal-header border-bottom-0">
+                                        <h1 class="modal-title fs-5">{{ grade.subject.subject_name }}</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                          <div class="modal-body py-0">
+                                            <p>Grade: {{ grade.type }}</p>
+                                            <br>
+                                            <p>Weight: {{ grade.weight }}</p>
+                                            <br>
+                                            <p>Description: {{ grade.description }}</p>
+                                            <br>
+                                            <p>Date: {{ grade.add_date }}</p>
+                                            <br>
+                                          </div>
+                                        </div>
+                                      </div>
+                                </div>
+                          {% endif %}
+                        {% endfor %}
+
+                </div>
+                <div class="col-md-1 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
+                <div class="col-md-1 themed-grid-col">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modalfinal{{ loop.index }}">
+                        <script>let final = '-';</script>
+                        {% for grade in student.grades %}
+                            {% if grade.is_final %}
+                                <script> final = {{ grade.type }}</script>
+                            {% endif %}
+                        {% endfor %}
+                        <script>document.write(final.toString())</script>
+                    </button>
+                </div>
+                <div class="col-md-1 themed-grid-col">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal-add-{{ subject.subject_name }}-{{ loop.index }}">add</button>
+
+                    <div class="modal fade" id="grade-modal-add-{{ subject.subject_name }}-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content rounded-4 shadow">
+                          <div class="modal-header border-bottom-0">
+                            <h1 class="modal-title fs-5">{{ subject.subject_name }}</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                              <div class="modal-body py-0">
+                                  <form action="#" method="post">
+                                        <div class="form-floating">
+                                            <input type="number"
+                                                   class="form-control"
+                                                   id="type"
+                                                   name="type"
+                                                   placeholder="Type"/>
+                                            <label for="type">Grade</label>
+                                        </div>
+                                        <br>
+                                        <div class="form-floating">
+                                            <input type="number"
+                                                   class="form-control"
+                                                   id="weight"
+                                                   name="weight"
+                                                   placeholder="Weight"/>
+                                            <label for="weight">Weight</label>
+                                        </div>
+                                        <br>
+                                        <div class="form-floating">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="description"
+                                                   name="description"
+                                                   placeholder="Description"/>
+                                            <label for="description">Description</label>
+                                        </div>
+                                        <br>
+                                        <div class="form-floating">
+                                            <input type="hidden"
+                                                   class="form-control"
+                                                   id="subject_id"
+                                                   name="subject_id"
+                                                   value="{{ subject.subject_id }}"/>
+                                        </div>
+                                        <div class="form-floating">
+                                            <input type="hidden"
+                                                   class="form-control"
+                                                   id="student_id"
+                                                   name="student_id"
+                                                   value="{{ student.student_id }}"/>
+                                        </div>
+                                    <button class="btn btn-primary w-100 py-2" type="submit">Add</button>
+                                    <br>
+                                  </form>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+            <hr>
+
+        {% endfor %}
+    {% endfor %}
+
+
+
+
 
 </div>
 </main>

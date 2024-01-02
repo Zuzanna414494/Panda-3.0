@@ -1,8 +1,8 @@
-import psycopg2
-from flask import Blueprint, redirect, render_template, url_for
+from datetime import datetime
+from flask import *
 from flask_login import login_required, current_user
 from .models import *
-from .plan_working import readLessons, readClasses
+from .plan_working import *
 
 views = Blueprint('views', __name__)
 
@@ -27,11 +27,32 @@ def grades():
     return render_template("grades.html", user=current_user, child=child)
 
 
-@views.route('/grades/<string:class_name>')
+@views.route('/grades/<string:class_name>', methods=["GET", "POST"])
 def grades_teacher(class_name):
     clas = Classes.query.get_or_404(class_name)
     classes = readClasses()
-    return render_template('grades_teacher.html', user=current_user, clas=clas, classes=classes)
+    subjects = Subjects.query.filter_by(teacher_id=current_user.user_id, class_name=class_name)
+    students = Students.query.filter_by(class_name=class_name)
+
+    if request.method == "POST":
+        grade = request.form.get("type")
+        if int(grade) > 6 or int(grade) < 1:
+            flash('Wrong grade!', category='error')
+        else:
+            new_grade = Grades(
+                subject_id=request.form["subject_id"],
+                type=grade,
+                weight=request.form.get("weight"),
+                student_id=request.form["student_id"],
+                description=request.form.get("description"),
+                add_date=datetime.now(),
+                is_final=False)
+            db.session.add(new_grade)
+            db.session.commit()
+            flash('Grade added!', category='success')
+        return redirect(url_for('views.grades_teacher', class_name=class_name))
+    return render_template('grades_teacher.html', user=current_user, clas=clas, subjects=subjects,
+                           classes=classes, students=students)
 
 
 @views.route('/plan')
@@ -58,6 +79,22 @@ def announcement_details(announcement_id):
     # Na przykład:
     announcement = Announcements.query.get_or_404(announcement_id)
     return render_template('announcement_details.html', user=current_user, announcement=announcement)
+
+
+@views.route('/add-announcement', methods=["GET", "POST"])
+@login_required
+def add_announcement():
+    if request.method == "POST":
+        new_announcement = Announcements(
+                     description=request.form.get("description"),
+                     add_date=datetime.now(),
+                     in_archive=False,
+                     teacher_id=current_user.user_id)
+        db.session.add(new_announcement)
+        db.session.commit()
+        announcement_id = new_announcement.announcement_id
+
+    return render_template("add_announcement.html", user=current_user)
 
 
 @views.route('/profile')
