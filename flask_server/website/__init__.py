@@ -55,12 +55,9 @@ def create_app():
                 announcement.in_archive = True
                 db.session.commit()
 
-
-    # Inicjalizacja schedulera
     scheduler = BackgroundScheduler()
-    #scheduler.add_job(archive_old_announcements, trigger='cron', hour=20,minute=42)  # Uruchomienie codziennie o
+    scheduler.add_job(archive_old_announcements, trigger='interval', hour=0) # Uruchomienie codziennie o
     # północy
-    scheduler.add_job(archive_old_announcements, trigger='interval', minutes=1)
 
     scheduler.start()
 
