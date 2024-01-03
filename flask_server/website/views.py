@@ -40,13 +40,11 @@ def grades_teacher(class_name):
         grade = request.form.get("type")
         weight = request.form.get("weight")
         description = request.form.get("description")
-        print(grade)
-        if grade == "" or weight == "" or description == "":
-            flash('Empty place!', category='error')
-        else:
-            if int(grade) > 6 or int(grade) < 1:
+        if not request.form.get("delete"):
+            if not grade or not weight or not description:
+                flash('Empty place!', category='error')
+            elif int(grade) > 6 or int(grade) < 1:
                 flash('Wrong grade!', category='error')
-
             else:
                 if request.form.get("change") == "false":
                     if request.form.get("is_final") == 'true':
@@ -87,13 +85,18 @@ def grades_teacher(class_name):
                         flash('Grade added!', category='success')
 
                 elif request.form.get("change") == "true":
+
                     grade = Grades.query.filter_by(grade_id=request.form.get("grade_id")).first()
                     grade.type = request.form.get("type")
                     grade.weight = request.form.get("weight")
                     grade.description = request.form.get("description")
                     db.session.commit()
                     flash('Grade changed!', category='success')
-
+        else:
+            if request.form.get("delete"):
+                Grades.query.filter_by(grade_id=request.form.get("grade_id_delete")).delete()
+                db.session.commit()
+                flash('Grade deleted!', category='success')
         return redirect(url_for('views.grades_teacher', class_name=class_name))
     return render_template('grades_teacher.html', user=current_user, clas=clas, subjects=subjects,
                            classes=classes, students=students)
@@ -128,14 +131,17 @@ def announcement_details(announcement_id):
 @login_required
 def add_announcement():
     if request.method == "POST":
-        new_announcement = Announcements(
-            description=request.form.get("description"),
-            add_date=datetime.now(),
-            in_archive=False,
-            teacher_id=current_user.user_id)
-        db.session.add(new_announcement)
-        db.session.commit()
-        announcement_id = new_announcement.announcement_id
+        if not request.form.get("description"):
+            flash('Empty place!', category='error')
+        else:
+            new_announcement = Announcements(
+                description=request.form.get("description"),
+                add_date=datetime.now(),
+                in_archive=False,
+                teacher_id=current_user.user_id)
+            db.session.add(new_announcement)
+            db.session.commit()
+            announcement_id = new_announcement.announcement_id
 
     return render_template("add_announcement.html", user=current_user)
 

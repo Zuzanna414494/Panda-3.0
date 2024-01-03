@@ -74,7 +74,26 @@
                                             <br>
 
                                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal-change-{{ subject.subject_name }}-{{ student.student_id }}-{{ loop.index }}">Change</button>
-                                            </div>
+                                            <br>
+                                              <br>
+                                            <form action="#" method="post">
+                                                <div class="form-floating">
+                                                        <input type="hidden"
+                                                               class="form-control"
+                                                               id="delete"
+                                                               name="delete"
+                                                               value="true"/>
+                                                </div>
+                                                <div class="form-floating">
+                                                        <input type="hidden"
+                                                               class="form-control"
+                                                               id="grade_id_delete"
+                                                               name="grade_id_delete"
+                                                               value="{{ grade.grade_id }}"/>
+                                                </div>
+                                                <button class="btn btn-primary" type="submit">Delete</button>
+                                            </form>
+                                          </div>
                                             <br>
                                             <br>
                                           </div>
@@ -138,6 +157,8 @@
                                                                                    name="change"
                                                                                    value="true"/>
                                                                     </div>
+                                                              <br>
+                                                              <br>
                                                             <button class="btn btn-primary w-100 py-2" type="submit">Change</button>
                                                             <br>
                                                             <br>
