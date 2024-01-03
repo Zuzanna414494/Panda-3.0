@@ -24,7 +24,9 @@ def grades():
         child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
     elif current_user.user_type == 'student':
         child = current_user.student[0]
-    return render_template("grades.html", user=current_user, child=child)
+    subjects = Subjects.query.filter_by(class_name=child.class_name)
+
+    return render_template("grades.html", user=current_user, child=child, subjects=subjects)
 
 
 @views.route('/grades/<string:class_name>', methods=["GET", "POST"])
@@ -36,20 +38,62 @@ def grades_teacher(class_name):
 
     if request.method == "POST":
         grade = request.form.get("type")
-        if int(grade) > 6 or int(grade) < 1:
-            flash('Wrong grade!', category='error')
+        weight = request.form.get("weight")
+        description = request.form.get("description")
+        print(grade)
+        if grade == "" or weight == "" or description == "":
+            flash('Empty place!', category='error')
         else:
-            new_grade = Grades(
-                subject_id=request.form["subject_id"],
-                type=grade,
-                weight=request.form.get("weight"),
-                student_id=request.form["student_id"],
-                description=request.form.get("description"),
-                add_date=datetime.now(),
-                is_final=False)
-            db.session.add(new_grade)
-            db.session.commit()
-            flash('Grade added!', category='success')
+            if int(grade) > 6 or int(grade) < 1:
+                flash('Wrong grade!', category='error')
+
+            else:
+                if request.form.get("change") == "false":
+                    if request.form.get("is_final") == 'true':
+                        if int(request.form.get("final_id")) == 0:
+                            is_final = True
+                            weight = 100
+                            description = "Final"
+                            new_grade = Grades(
+                                subject_id=request.form["subject_id"],
+                                type=grade,
+                                weight=weight,
+                                student_id=request.form["student_id"],
+                                description=description,
+                                add_date=datetime.now(),
+                                is_final=is_final)
+                            db.session.add(new_grade)
+                            db.session.commit()
+                            flash('Grade added!', category='success')
+                        else:
+                            grade = Grades.query.filter_by(grade_id=request.form.get("final_id")).first()
+                            grade.type = request.form.get("type")
+                            grade.add_date = datetime.now()
+                            db.session.commit()
+                            flash('Grade changed!', category='success')
+
+                    elif request.form.get("is_final") == 'false':
+                        is_final = False
+                        new_grade = Grades(
+                            subject_id=request.form["subject_id"],
+                            type=grade,
+                            weight=weight,
+                            student_id=request.form["student_id"],
+                            description=description,
+                            add_date=datetime.now(),
+                            is_final=is_final)
+                        db.session.add(new_grade)
+                        db.session.commit()
+                        flash('Grade added!', category='success')
+
+                elif request.form.get("change") == "true":
+                    grade = Grades.query.filter_by(grade_id=request.form.get("grade_id")).first()
+                    grade.type = request.form.get("type")
+                    grade.weight = request.form.get("weight")
+                    grade.description = request.form.get("description")
+                    db.session.commit()
+                    flash('Grade changed!', category='success')
+
         return redirect(url_for('views.grades_teacher', class_name=class_name))
     return render_template('grades_teacher.html', user=current_user, clas=clas, subjects=subjects,
                            classes=classes, students=students)
@@ -85,10 +129,10 @@ def announcement_details(announcement_id):
 def add_announcement():
     if request.method == "POST":
         new_announcement = Announcements(
-                     description=request.form.get("description"),
-                     add_date=datetime.now(),
-                     in_archive=False,
-                     teacher_id=current_user.user_id)
+            description=request.form.get("description"),
+            add_date=datetime.now(),
+            in_archive=False,
+            teacher_id=current_user.user_id)
         db.session.add(new_announcement)
         db.session.commit()
         announcement_id = new_announcement.announcement_id

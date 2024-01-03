@@ -6,21 +6,6 @@
 {% block content %}
 <main>
 
-<script>
-    function Average(...list){
-        let average = "-";
-        if(list.length > 0) {
-            average = list.reduce((a, b) => a + b, 0) / list.length;
-        }
-        return Math.round(average * 100) / 100;
-    }
-    let arr = [];
-</script>
-
-{% set subjects = ['Matematyka', 'Biologia', 'Chemia', 'Fizyka'] %}
-{% set names = ['Maths', 'Biology', 'Chemistry', 'Physics'] %}
-
-
 
   <div class="container">
   {% if user.user_type == 'teacher' %}
@@ -50,25 +35,27 @@
       <div class="col-md-2 themed-grid-col"><b>SUBJECT</b></div>
       <div class="col-md-8 themed-grid-col"><b>GRADES</b></div>
       <div class="col-md-1 themed-grid-col"><b>AVERAGE</b></div>
-      <div class="col-md-1 themed-grid-col"><b>FINAL</b></div>
+      <div class="col-md-1 themed-grid-col"><b>FINAL GRADE</b></div>
     </div>
     <hr>
 
     {% for subject in subjects %}
      <div class="row mb-3 text-center">
-      <div class="col-md-2 themed-grid-col">{{ names[loop.index - 1] }}</div>
+      <div class="col-md-2 themed-grid-col">{{ subject.subject_name }}</div>
       <div class="col-md-8 themed-grid-col">
       <script >
-        arr = [];
+        sum = 0;
+        denom = 0;
       </script>
           {% for grade in child.grades %}
-              {% if grade.subject.subject_name == subject and grade.is_final == false %}
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal{{ loop.index }}">{{ grade.type }}</button>
+              {% if grade.subject.subject_name == subject.subject_name and grade.is_final == false %}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal-{{ subject.subject_id }}-{{ child.student_id }}-{{ loop.index }}">{{ grade.type }}</button>
                   <script>
-                    arr.push({{ grade.type }});
+                    sum += {{ grade.type }} * {{ grade.weight }};
+                    denom += {{ grade.weight }};
                   </script>
               <!-- Modal -->
-                    <div class="modal fade" id="grade-modal{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="grade-modal-{{ subject.subject_id }}-{{ child.student_id }}-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content rounded-4 shadow">
                           <div class="modal-header border-bottom-0">
@@ -92,11 +79,11 @@
             {% endfor %}
 
       </div>
-      <div class="col-md-1 themed-grid-col"><script>document.write((Average.apply({},arr).toString()))</script></div>
+      <div class="col-md-1 themed-grid-col"><script>document.write((Math.round(sum*100/denom)/100).toString())</script></div>
       <div class="col-md-1 themed-grid-col">
-            <script>let final = '-';</script>
+            <script> final = '-';</script>
             {% for grade in child.grades %}
-                {% if grade.is_final %}
+                {% if grade.is_final == true and grade.subject.subject_name == subject.subject_name %}
                     <script> final = {{ grade.type }}</script>
                 {% endif %}
             {% endfor %}
