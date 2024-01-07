@@ -24,14 +24,9 @@
       </div>
       <br>
   {% endif %}
-  {% if user.user_type == 'student' or user.user_type == 'teacher' %}
-        <h1>Your plan</h1>
-  {% else %}
-        <h1>Your child's plan</h1>
-  {% endif %}
+    <h1>Plan of class: {{ class_name }}</h1>
   <br>
 
-{% if user.user_type != 'admin' %}
 
     <div class="table-responsive">
         <table class="table table-sm table-striped table-bordered text-center">
@@ -76,7 +71,6 @@
             </tbody>
         </table>
     </div>
-  {% endif %}
   </div>
 </main>
 {% endblock %}

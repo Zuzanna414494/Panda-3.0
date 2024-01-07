@@ -8,7 +8,7 @@
 
 
   <div class="container">
-  {% if user.user_type == 'teacher' %}
+  {% if user.user_type == 'teacher' or user.user_type == 'admin' %}
 
       <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

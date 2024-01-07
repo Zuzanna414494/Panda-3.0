@@ -26,14 +26,14 @@ def get_plan():
 
 # get_plan()
 
-def readLessons(user_id_l):
+def readLessons(user_id_l, user_type):
     con = psycopg2.connect(database="dziennik_baza",
                            user="dziennik_baza_user",
                            password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc",
                            host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com",
                            port="5432")
     cur = con.cursor()
-    if current_user.user_type == 'student':
+    if user_type == 'student' or user_type == 'admin':
         cur.execute(
             "SELECT su.subject_name, l.day_of_week, l.start_time, l.end_time, l.building, l.test "
             "FROM lessons l "
@@ -43,7 +43,7 @@ def readLessons(user_id_l):
             "WHERE st.student_id = %(user_id_l)s",
             {'user_id_l': user_id_l}
         )
-    elif current_user.user_type == 'teacher':
+    elif user_type == 'teacher':
         cur.execute(
             "SELECT su.subject_name, l.day_of_week, l.start_time, l.end_time, l.building, l.test "
             "FROM lessons l "

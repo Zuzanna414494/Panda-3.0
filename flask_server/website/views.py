@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import *
 from flask_login import login_required, current_user
 from .models import *
-from .plan_working import *
+from .get_data_from_db import *
 
 views = Blueprint('views', __name__)
 
@@ -15,7 +15,7 @@ def home():
 @views.route('/grades')
 @login_required
 def grades():
-    if current_user.user_type == 'teacher':
+    if current_user.user_type == 'teacher' or current_user.user_type == 'admin':
         classes = readClasses()
         return render_template("grades.html", user=current_user, classes=classes)
 
@@ -33,7 +33,10 @@ def grades():
 def grades_teacher(class_name):
     clas = Classes.query.get_or_404(class_name)
     classes = readClasses()
-    subjects = Subjects.query.filter_by(teacher_id=current_user.user_id, class_name=class_name)
+    if current_user.user_type == 'teacher':
+        subjects = Subjects.query.filter_by(teacher_id=current_user.user_id, class_name=class_name)
+    if current_user.user_type == 'admin':
+        subjects = Subjects.query.filter_by(class_name=class_name)
     students = Students.query.filter_by(class_name=class_name)
 
     if request.method == "POST":
@@ -107,10 +110,27 @@ def grades_teacher(class_name):
 def plan():
     if current_user.user_type == 'parent':
         child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
-        zajecia = readLessons(child.student_id)
+        zajecia = readLessons(child.student_id, current_user.user_type)
+    elif current_user.user_type == 'admin':
+        classes = readClasses()
+        return render_template("plan.html", classes=classes)
+    elif current_user.user_type == 'teacher':
+        classes = readClasses()
+        zajecia = readLessons(current_user.user_id, current_user.user_type)
+        return render_template("plan.html", user=current_user, zajecia=zajecia, classes=classes)
     else:
-        zajecia = readLessons(current_user.user_id)
+        zajecia = readLessons(current_user.user_id, current_user.user_type)
+
     return render_template("plan.html", user=current_user, zajecia=zajecia)
+
+
+@views.route('/plan/<string:class_name>', methods=["GET", "POST"])
+def plan_teacher(class_name):
+    classes = readClasses()
+    child = Students.query.filter_by(class_name=class_name).first()
+    zajecia = readLessons(child.student_id, 'admin')
+
+    return render_template("plan_teacher.html", user=current_user, class_name=class_name, zajecia=zajecia, classes=classes)
 
 
 @views.route('/announcements')
