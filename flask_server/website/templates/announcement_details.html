@@ -10,6 +10,18 @@
         <p>{{ announcement.description }}</p>
         <p>Date: {{ announcement.add_date }}</p>
         <p>Teacher: {{ announcement.teacher_name() }}</p>
+        {% if user.user_type == 'admin' or user.user_id == announcement.teacher_id %}
+            <form action="#" method="post">
+                <div class="form-floating">
+                        <input type="hidden"
+                               class="form-control"
+                               id="announcement_id"
+                               name="announcement_id"
+                               value="{{ announcement.announcement_id }}"/>
+                </div>
+                <button class="btn btn-primary" type="submit">Delete</button>
+            </form>
+        {% endif %}
     </div>
   </div>
 </main>

@@ -136,14 +136,20 @@ def plan_teacher(class_name):
 @views.route('/announcements')
 @login_required
 def announcements():
-    filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).order_by(
-        Announcements.add_date.desc()).all()
+    filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).order_by(Announcements.add_date.desc()).all()
     return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements)
 
 
-@views.route('/announcement/<int:announcement_id>')
+@views.route('/announcement/<int:announcement_id>', methods=["GET", "POST"])
 def announcement_details(announcement_id):
     announcement = Announcements.query.get_or_404(announcement_id)
+    if request.method == "POST":
+        Announcements.query.filter_by(announcement_id=request.form.get("announcement_id")).delete()
+        db.session.commit()
+        flash('Announcement deleted!', category='success')
+        filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).order_by(
+            Announcements.add_date.desc()).all()
+        return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements)
     return render_template('announcement_details.html', user=current_user, announcement=announcement)
 
 
