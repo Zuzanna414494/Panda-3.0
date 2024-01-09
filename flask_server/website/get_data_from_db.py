@@ -138,8 +138,9 @@ def search(searched):
     cur = con.cursor()
     # wykonanie zapytania w bazie za pomocą kursora - wyszukiwanie uczniów
     cur.execute(
-        "SELECT name, surname "
+        "SELECT name, surname, student_id, user_type "
         "FROM students "
+        "JOIN users on user_id=student_id "
         "WHERE name ilike %(searched)s or surname ilike %(searched)s ",
         {'searched': '%' + searched + '%'}
     )
@@ -153,8 +154,9 @@ def search(searched):
     # wykonanie zapytania w bazie za pomocą kursora - wyszukiwanie nauczycieli
     cur = con.cursor()
     cur.execute(
-        "SELECT name, surname "
+        "SELECT name, surname, teacher_id, user_type "
         "FROM teachers "
+        "JOIN users on user_id=teacher_id "
         "WHERE name ilike %(searched)s or surname ilike %(searched)s ",
         {'searched': '%' + searched + '%'}
     )
@@ -166,8 +168,9 @@ def search(searched):
     # wykonanie zapytania w bazie za pomocą kursora - wyszukiwanie rodziców
     cur = con.cursor()
     cur.execute(
-        "SELECT name, surname "
+        "SELECT name, surname, parent_id, user_type "
         "FROM parents "
+        "JOIN users on user_id=parent_id "
         "WHERE name ilike %(searched)s or surname ilike %(searched)s ",
         {'searched': '%' + searched + '%'}
     )
@@ -188,9 +191,11 @@ def add_names_to_dict(users, data):
     # formatowanie pobranych danych na słowniki (każdy ma dwa atrybuty: nazwa i nazwisko) i dodanie ich do listy z wynikami
     for line in data:
         line_str = ', '.join(map(str, line))
-        name, surname = line_str.split(", ")
+        name, surname, user_id, user_type = line_str.split(", ")
         x = {
             "name": name,
             "surname": surname,
+            "user_id": user_id,
+            "user_type": user_type
         }
         users.append(x)

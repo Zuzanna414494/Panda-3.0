@@ -249,3 +249,12 @@ def profile():
         return render_template("profile.html", user=current_user, searched=searched, users=users)
 
     return render_template("profile.html", user=current_user)
+
+
+# endpoint służący do wyświetlania strony profilowej wyszukanego użytkownika
+@views.route('/profile/<int:user_id>')
+@login_required
+def searched_profile(user_id):
+    searched_user = Users.query.filter_by(user_id=user_id).first()
+
+    return render_template("searched_profile.html", user=current_user, searched_user=searched_user)

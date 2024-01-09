@@ -1,0 +1,173 @@
+{#  strona do wyświetlenia informacji o wyszukanym użytkowniku     #}
+
+{% extends "base.html" %}
+{% block title %}Searched profile{% endblock %}
+
+{% block content %}
+<main>
+
+  <div class="container">
+
+{#  wyświetlenie danych     #}
+
+  <div class="my-3 p-3 bg-body rounded shadow-sm">
+
+  {% if user.user_type=='teacher' or user.user_type=='admin' %}
+
+
+
+        {% if searched_user.user_type == 'teacher' %}
+        <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ searched_user.teacher[0].name }} {{ searched_user.teacher[0].surname }}</h6>
+          </p>
+        </div>
+
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Classroom: &emsp;&emsp;{{ searched_user.teacher[0].classroom_nr }}</h6>
+      </p>
+        </div>
+        <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Description: &emsp;&emsp;{{ searched_user.teacher[0].description }}</h6>
+      </p>
+        </div>
+      {% endif %}
+
+
+  {% if searched_user.user_type == 'student' %}
+
+      <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ searched_user.student[0].name }} {{ searched_user.student[0].surname }}</h6>
+          </p>
+      </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Gradebook number: &emsp;&emsp;{{ searched_user.student[0].gradebook_nr }}</h6>
+      </p>
+        </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Class: &emsp;&emsp;{{ searched_user.student[0].class_name }}</h6>
+      </p>
+        </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Student id: &emsp;&emsp;{{ searched_user.student[0].student_id }}</h6>
+      </p>
+        </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Date of birth: &emsp;&emsp;{{ searched_user.student[0].date_of_birth.strftime("%d %B %Y") }}</h6>
+      </p>
+        </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Place of birth: &emsp;&emsp;{{ searched_user.student[0].place_of_birth }}</h6>
+      </p>
+        </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Address: &emsp;&emsp;{{ searched_user.student[0].address }}</h6>
+      </p>
+        </div>
+      {% endif %}
+
+
+  {% if searched_user.user_type == 'parent' %}
+
+      <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ searched_user.parent[0].name }} {{ searched_user.parent[0].surname }}</h6>
+          </p>
+      </div>
+  {% endif %}
+
+        <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+            <h6 class="border-bottom pb-2 mb-0">User type: &emsp;&emsp;{{ searched_user.user_type }}</h6>
+          </p>
+        </div>
+        <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+            <h6 class="border-bottom pb-2 mb-0">E-mail: &emsp;&emsp;&emsp;{{ searched_user.email }}</h6>
+          </p>
+            </div>
+          <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+            <h6 class="border-bottom pb-2 mb-0">Phone: &emsp;&emsp;&emsp;{{ searched_user.phone_nr }}</h6>
+          </p>
+            </div>
+
+
+    {% else %}
+
+
+      {% if searched_user.user_type == 'teacher' %}
+        <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ searched_user.teacher[0].name }} {{ searched_user.teacher[0].surname }}</h6>
+          </p>
+        </div>
+
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Classroom: &emsp;&emsp;{{ searched_user.teacher[0].classroom_nr }}</h6>
+      </p>
+        </div>
+        <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Description: &emsp;&emsp;{{ searched_user.teacher[0].description }}</h6>
+      </p>
+        </div>
+      {% endif %}
+
+
+  {% if searched_user.user_type == 'student' %}
+
+      <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ searched_user.student[0].name }} {{ searched_user.student[0].surname }}</h6>
+          </p>
+      </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Gradebook number: &emsp;&emsp;{{ searched_user.student[0].gradebook_nr }}</h6>
+      </p>
+        </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Class: &emsp;&emsp;{{ searched_user.student[0].class_name }}</h6>
+      </p>
+        </div>
+      <div class="d-flex text-body-secondary pt-3">
+      <p class="pb-3 mb-0 small lh-sm border-bottom">
+        <h6 class="border-bottom pb-2 mb-0">Student id: &emsp;&emsp;{{ searched_user.student[0].student_id }}</h6>
+      </p>
+        </div>
+      {% endif %}
+
+
+  {% if searched_user.user_type == 'parent' %}
+
+      <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+              <h6 class="border-bottom pb-2 mb-0">User: &emsp;&emsp;&emsp;&emsp; {{ searched_user.parent[0].name }} {{ searched_user.parent[0].surname }}</h6>
+          </p>
+      </div>
+  {% endif %}
+
+        <div class="d-flex text-body-secondary pt-3">
+          <p class="pb-3 mb-0 small lh-sm border-bottom">
+            <h6 class="border-bottom pb-2 mb-0">User type: &emsp;&emsp;{{ searched_user.user_type }}</h6>
+          </p>
+        </div>
+
+
+    {% endif %}
+    </div>
+</div>
+</main>
+{% endblock %}

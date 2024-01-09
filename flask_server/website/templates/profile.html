@@ -179,11 +179,22 @@
 
 {#  wyniki wyszukiwania     #}
     {% if searched != null %}
-        Searched for: {{ searched }}
+        <br>
+        <h5>Searched for: {{ searched }}</h5>
         <br><br>
+        <hr>
         {% for user in users %}
-            {{ user.name }} {{ user.surname }}
+
+            <div class="search-details">
+            <a href="{{ url_for('views.searched_profile', user_id=user.user_id) }}">
+                <h4>{{ user.name }} {{ user.surname }}</h4>
+            </a>
+            Id: {{ user.user_id }} &nbsp;&nbsp;
+            User type: {{ user.user_type }}
+            </div>
+            <hr>
             <br>
+
         {% endfor %}
     {% endif %}
 
