@@ -23,8 +23,7 @@
           </ul>
       </div>
       <br>
-  {% endif %}
-  {% if user.user_type == 'student' or user.user_type == 'teacher' %}
+  {% elif user.user_type == 'student' or user.user_type == 'teacher' %}
         <h1>Your plan</h1>
   {% else %}
         <h1>Your child's plan</h1>

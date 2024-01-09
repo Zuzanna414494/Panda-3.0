@@ -1,3 +1,5 @@
+# plik z funkcjami służącymi do pobrania danych z bazy danych oraz z ich funkcjami pomocniczymi
+
 import psycopg2
 
 
@@ -85,20 +87,28 @@ def readLessons(user_id_l, user_type):
     return zajecia
 
 
+# funkcja, która pobiera nazwę i profil każdej klasy w bazie danych
 def readClasses():
+    # połączenie z bazą danych
     con = psycopg2.connect(database="dziennik_baza",
                            user="dziennik_baza_user",
                            password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc",
                            host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com",
                            port="5432")
+    # stworzenie kursora
     cur = con.cursor()
+    # wykonanie zapytania w bazie za pomocą kursora
     cur.execute(
         "SELECT class_name, class_profile "
         "FROM classes"
     )
+    # pobranie wyszukanych danych
     classes_data = cur.fetchall()
+    # zamknięcie kursora i połączenia
     cur.close()
     con.close()
+
+    # formatowanie pobranych danych na listę składającą się ze słowników, każdy ma dwa atrybuty: nazwa i profil
     classes = []
     for line in classes_data:
         line_str = ', '.join(map(str, line))
@@ -108,35 +118,39 @@ def readClasses():
             "class_profile": class_profile,
         }
         classes.append(x)
+    # sortowanie nazw klas alfabetycznie
     classes.sort(key=lambda d: d['class_name'])
+    # zwrócenie sformatowanych danych
     return classes
 
 
+# funkcja zwracająca wyniki wyszukiwania użytkowników
 def search(searched):
+    # deklaracja listy z wynikami wyszukiwania
+    users = []
+    # połączenie z bazą danych
     con = psycopg2.connect(database="dziennik_baza",
                            user="dziennik_baza_user",
                            password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc",
                            host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com",
                            port="5432")
+    # stworzenie kursora
     cur = con.cursor()
+    # wykonanie zapytania w bazie za pomocą kursora - wyszukiwanie uczniów
     cur.execute(
         "SELECT name, surname "
         "FROM students "
         "WHERE name ilike %(searched)s or surname ilike %(searched)s ",
         {'searched': '%' + searched + '%'}
     )
+    # pobranie wyszukanych danych
     students_data = cur.fetchall()
+    # zamknięcie kursora i połączenia
     cur.close()
-    users = []
-    for line in students_data:
-        line_str = ', '.join(map(str, line))
-        name, surname = line_str.split(", ")
-        x = {
-            "name": name,
-            "surname": surname,
-        }
-        users.append(x)
+    # dodanie uczniów do zwracanego słownika
+    add_names_to_dict(users, students_data)
 
+    # wykonanie zapytania w bazie za pomocą kursora - wyszukiwanie nauczycieli
     cur = con.cursor()
     cur.execute(
         "SELECT name, surname "
@@ -146,15 +160,10 @@ def search(searched):
     )
     teachers_data = cur.fetchall()
     cur.close()
-    for line in teachers_data:
-        line_str = ', '.join(map(str, line))
-        name, surname = line_str.split(", ")
-        x = {
-            "name": name,
-            "surname": surname,
-        }
-        users.append(x)
+    # dodanie nauczycieli do zwracanego słownika
+    add_names_to_dict(users, teachers_data)
 
+    # wykonanie zapytania w bazie za pomocą kursora - wyszukiwanie rodziców
     cur = con.cursor()
     cur.execute(
         "SELECT name, surname "
@@ -165,7 +174,19 @@ def search(searched):
     parents_data = cur.fetchall()
     cur.close()
     con.close()
-    for line in parents_data:
+    # dodanie rodziców do zwracanego słownika
+    add_names_to_dict(users, parents_data)
+
+    # sortowanie wyników alfabetycznie
+    users.sort(key=lambda d: d['surname'])
+    # zwrócenie wyników wyszukiwania
+    return users
+
+
+# funkcja przekształcająca pobrane wyniki wyszukiwania użytkowników z bazy danych
+def add_names_to_dict(users, data):
+    # formatowanie pobranych danych na słowniki (każdy ma dwa atrybuty: nazwa i nazwisko) i dodanie ich do listy z wynikami
+    for line in data:
         line_str = ', '.join(map(str, line))
         name, surname = line_str.split(", ")
         x = {
@@ -173,6 +194,3 @@ def search(searched):
             "surname": surname,
         }
         users.append(x)
-
-    users.sort(key=lambda d: d['surname'])
-    return users

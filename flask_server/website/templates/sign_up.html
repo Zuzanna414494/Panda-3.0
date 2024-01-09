@@ -1,3 +1,5 @@
+{#  strona do rejestracji nowych użytkowników   #}
+
 {% extends "base.html" %}
 {% block title %}Sign up{% endblock %}
 
@@ -6,6 +8,7 @@
 
   <div class="container">
 
+{#  wprowadzanie danych o nowym użytkowniku     #}
         <h1>Create an account</h1>
         <br>
         <form action="#" method="post">
@@ -158,9 +161,7 @@
                 <label for="description">Description</label>
             </div>
 
-<!--            <label for="user_type">User type</label>-->
-<!--			<input type="text" class="form-control" name="user_type"/>-->
-
+{#  przycisk do zatwierdzenia   #}
     		    <button class="btn btn-primary w-100 py-2" type="submit">Register</button>
         </form>
   </div>

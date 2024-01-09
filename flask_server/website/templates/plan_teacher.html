@@ -1,3 +1,5 @@
+{#  strona do wyświetlania planu dla nauczyciela i admina   #}
+
 {% extends "base.html" %}
 {% block title %}Plan{% endblock %}
 {% set active_page = "plan" %}
@@ -12,6 +14,8 @@
 </style>
 
   <div class="container">
+
+{#  wybór lasy, której plan zajęć chce się zobazcyć     #}
   {% if user.user_type == 'teacher' or user.user_type == 'admin' %}
     <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -24,6 +28,9 @@
       </div>
       <br>
   {% endif %}
+
+
+{#  wyświetlenie planu  #}
     <h1>Plan of class: {{ class_name }}</h1>
   <br>
 

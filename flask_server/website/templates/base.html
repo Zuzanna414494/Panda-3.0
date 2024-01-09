@@ -1,3 +1,5 @@
+{#  szablon bazowy, każda strona po zalogowaniu go rozszerza    #}
+
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
   <head><script src="/static/js/color-modes.js"></script>
@@ -156,9 +158,12 @@
       </ul>
     </div>
 
+
+{#  wyświetlenie nagłówka   #}
 <h1 class="visually-hidden">Headers examples</h1>
     {% include "header.html" %}
 
+{#    obsługa alertów   #}
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         {% for category, message in messages %}
@@ -180,27 +185,6 @@
 
 {% block content %}
 {% endblock %}
-
-
-{#<!-- Modal -->#}
-{#<div class="modal fade" id="grade-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">#}
-{#  <div class="modal-dialog" role="document">#}
-{#    <div class="modal-content">#}
-{#      <div class="modal-header">#}
-{#        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>#}
-{#<button type="button" class="btn btn-secondary" data-dismiss="modal">x</button>#}
-{#      </div>#}
-{#      <div class="modal-body">#}
-{#        ...#}
-{#      </div>#}
-{#      <div class="modal-footer">#}
-{#        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>#}
-{#      </div>#}
-{#    </div>#}
-{#  </div>#}
-{#</div>#}
-
-
 
 
 

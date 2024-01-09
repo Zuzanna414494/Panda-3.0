@@ -7,50 +7,94 @@ from .get_data_from_db import *
 views = Blueprint('views', __name__)
 
 
+# endpoint domyślny - strona logowania
 @views.route("/")
 def home():
     return redirect(url_for("auth.login"))
 
 
+# endpoint wyświetlający stronę z ocenami
 @views.route('/grades')
 @login_required
 def grades():
+    # jeśli użytkownik jest nauczycielem albo administratorem, następuje pobranie wszystkich klas,
+    # żeby mógł wybrać, której klasy oceny chce zobaczyć
     if current_user.user_type == 'teacher' or current_user.user_type == 'admin':
         classes = readClasses()
         return render_template("grades.html", user=current_user, classes=classes)
 
     child = None
+    # jeśli użytkownik jest rodzicem, następuje wyszukanie modelu ucznia jego dziecka
     if current_user.user_type == 'parent':
         child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
+    # jeśli użytkownik jest uczniem, od razu przypisanie do 'child' jego modelu ucznia
     elif current_user.user_type == 'student':
         child = current_user.student[0]
+    # pobranie przedmiotów klasy, do której jezt przypisany uczeń (albo dziecko)
     subjects = Subjects.query.filter_by(class_name=child.class_name)
 
     return render_template("grades.html", user=current_user, child=child, subjects=subjects)
 
 
+# endpoint wyświetlający oceny danej klasy (dla nauczyciela albo admina), pobiera nazwę danej klasy
 @views.route('/grades/<string:class_name>', methods=["GET", "POST"])
 def grades_teacher(class_name):
+    # wyszukanie modelu klasy
     clas = Classes.query.get_or_404(class_name)
+    # pobrane nazw wszystkich klas, żeby można było wybrać, do strony z ocenami któej klasy chce się przejść
     classes = readClasses()
+    # dla nauczyciela pobranie tych przedmiotów, których uczy w danej klasie
     if current_user.user_type == 'teacher':
         subjects = Subjects.query.filter_by(teacher_id=current_user.user_id, class_name=class_name)
+    # dla admina pobranie wszystkich przedmiotów danej klasy
     if current_user.user_type == 'admin':
         subjects = Subjects.query.filter_by(class_name=class_name)
+    # pobranie modeli uczniów danej klasy
     students = Students.query.filter_by(class_name=class_name)
 
     if request.method == "POST":
+
+        # pobranie informacji o nowo dodanej albo zmienionej ocenie
         grade = request.form.get("type")
         weight = request.form.get("weight")
         description = request.form.get("description")
-        if not request.form.get("delete"):
-            if not grade or not weight or not description:
-                flash('Empty place!', category='error')
-            elif int(grade) > 6 or int(grade) < 1:
-                flash('Wrong grade!', category='error')
+
+        # jeśli akcja to usuwanie
+        if request.form.get("delete"):
+            # wyszukanie danej oceny w bazie na podstawie jej id i usunięcie
+            Grades.query.filter_by(grade_id=request.form.get("grade_id_delete")).delete()
+            db.session.commit()
+            # komunikat o poprawnie wykonanej akcji
+            flash('Grade deleted!', category='success')
+
+        else:
+            # jeśli akcja zmiana zwykłej oceny
+            if request.form.get("change"):
+                # sprawdzenie, czy poprawnie wprowadzono dane
+                if not grade:
+                    flash('Empty place!', category='error')
+                elif int(grade) > 6 or int(grade) < 1:
+                    flash('Wrong grade!', category='error')
+                else:
+                    # wyszukanie danej oceny w bazie na podstawie jej id i jej edycja
+                    grade = Grades.query.filter_by(grade_id=request.form.get("grade_id")).first()
+                    grade.type = request.form.get("type")
+                    grade.weight = request.form.get("weight")
+                    grade.description = request.form.get("description")
+                    db.session.commit()
+                    flash('Grade changed!', category='success')
+
             else:
-                if request.form.get("change") == "false":
-                    if request.form.get("is_final") == 'true':
+                # dodanie albo zmiana oceny końcowej
+                if request.form.get("is_final"):
+                    # sprawdzenie, czy poprawnie wprowadzono dane
+                    if not grade:
+                        flash('Empty place!', category='error')
+                    elif int(grade) > 6 or int(grade) < 1:
+                        flash('Wrong grade!', category='error')
+                    else:
+
+                        # jeśli uczeń nie posiada oceny końcowej z danego przedmiotu to dodanie nowej
                         if int(request.form.get("final_id")) == 0:
                             is_final = True
                             weight = 100
@@ -66,6 +110,8 @@ def grades_teacher(class_name):
                             db.session.add(new_grade)
                             db.session.commit()
                             flash('Grade added!', category='success')
+
+                        # jeśli uczeń posiada, to jej edycja
                         else:
                             grade = Grades.query.filter_by(grade_id=request.form.get("final_id")).first()
                             grade.type = request.form.get("type")
@@ -73,7 +119,15 @@ def grades_teacher(class_name):
                             db.session.commit()
                             flash('Grade changed!', category='success')
 
-                    elif request.form.get("is_final") == 'false':
+                # dodanie nowej zwykłej oceny
+                else:
+                    # sprawdzenie, czy poprawnie wprowadzono dane
+                    if not grade or not weight or not description:
+                        flash('Empty place!', category='error')
+                    elif int(grade) > 6 or int(grade) < 1:
+                        flash('Wrong grade!', category='error')
+                    else:
+                        # wprowadzenie nowej oceny do bazy
                         is_final = False
                         new_grade = Grades(
                             subject_id=request.form["subject_id"],
@@ -87,56 +141,61 @@ def grades_teacher(class_name):
                         db.session.commit()
                         flash('Grade added!', category='success')
 
-                elif request.form.get("change") == "true":
-
-                    grade = Grades.query.filter_by(grade_id=request.form.get("grade_id")).first()
-                    grade.type = request.form.get("type")
-                    grade.weight = request.form.get("weight")
-                    grade.description = request.form.get("description")
-                    db.session.commit()
-                    flash('Grade changed!', category='success')
-        else:
-            if request.form.get("delete"):
-                Grades.query.filter_by(grade_id=request.form.get("grade_id_delete")).delete()
-                db.session.commit()
-                flash('Grade deleted!', category='success')
+        # powrót do strony z ocenami danej klasy
         return redirect(url_for('views.grades_teacher', class_name=class_name))
+
     return render_template('grades_teacher.html', user=current_user, clas=clas, subjects=subjects,
                            classes=classes, students=students)
 
 
+# endpoint wyświetlający plan zajęć
 @views.route('/plan')
 @login_required
 def plan():
+
+    # jeśli użytkownik to rodzic, to pobranie modelu jego dziecka i wczytanie jego zajęć
     if current_user.user_type == 'parent':
         child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
         zajecia = readLessons(child.student_id, current_user.user_type)
+
+    # jeśli użytkownik to admin, to wczytanie wszystkich klas - będzie mógł wybrać której klasy plan chce zobaczyć
     elif current_user.user_type == 'admin':
         classes = readClasses()
-        return render_template("plan.html", classes=classes)
+        return render_template("plan.html", user=current_user, classes=classes)
+
+    # jeśli użytkownik to nauczyciel, to wczytanie wszystkich klas - będzie mógł wybrać której klasy plan chce zobaczyć
+    # - oraz wczytanie jego własnych zajęć (na początku zobaczy też swój plan)
     elif current_user.user_type == 'teacher':
         classes = readClasses()
         zajecia = readLessons(current_user.user_id, current_user.user_type)
         return render_template("plan.html", user=current_user, zajecia=zajecia, classes=classes)
+
+    # jeśli użytkownik to uczeń, to wczytanie jego zajęć
     else:
         zajecia = readLessons(current_user.user_id, current_user.user_type)
 
     return render_template("plan.html", user=current_user, zajecia=zajecia)
 
 
+# endpoint wyświetlający plan zajęć danej klasy (dla nauczyciela i admina)
 @views.route('/plan/<string:class_name>', methods=["GET", "POST"])
 def plan_teacher(class_name):
+
+    # wczytanie wszystkich klas, aby można było którąś wybrać
     classes = readClasses()
+    # wczytanie zajęć uczniów z danej klasy
     child = Students.query.filter_by(class_name=class_name).first()
     zajecia = readLessons(child.student_id, 'admin')
 
-    return render_template("plan_teacher.html", user=current_user, class_name=class_name, zajecia=zajecia, classes=classes)
+    return render_template("plan_teacher.html", user=current_user, class_name=class_name, zajecia=zajecia,
+                           classes=classes)
 
 
 @views.route('/announcements')
 @login_required
 def announcements():
-    filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).order_by(Announcements.add_date.desc()).all()
+    filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).order_by(
+        Announcements.add_date.desc()).all()
     return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements)
 
 
@@ -153,12 +212,18 @@ def announcement_details(announcement_id):
     return render_template('announcement_details.html', user=current_user, announcement=announcement)
 
 
+# endpoint służący do dodawania nowych ogłoszeń
 @views.route('/add-announcement', methods=["GET", "POST"])
 @login_required
 def add_announcement():
+
     if request.method == "POST":
+
+        # sprawdzenie, czy poprawnie wprowadzono dane
         if not request.form.get("description"):
             flash('Empty place!', category='error')
+
+        # dodanie nowego ogłoszenia do bazy
         else:
             new_announcement = Announcements(
                 description=request.form.get("description"),
@@ -172,16 +237,15 @@ def add_announcement():
     return render_template("add_announcement.html", user=current_user)
 
 
+# endpoint służący do wyświetlania strony profilowej użytkownika oraz do wyszukiwania innych użytkowników
 @views.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+
+    # wyszukiwanie innych użytkowników
     if request.method == "POST":
         searched = request.form.get("search")
-        # users = Students.query.filter(Students.name.ilike('%' + searched + '%'))
-        # users += Students.query.filter(Students.surname.ilike('%' + searched + '%'))
         users = search(searched)
-        print(users)
         return render_template("profile.html", user=current_user, searched=searched, users=users)
 
     return render_template("profile.html", user=current_user)
-

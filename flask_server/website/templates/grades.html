@@ -1,3 +1,5 @@
+{#  wyświetlanie ocen ucznia    #}
+
 {% extends "base.html" %}
 {% block title %}Grades{% endblock %}
 
@@ -8,6 +10,8 @@
 
 
   <div class="container">
+
+{#  nauczyciel lub admin wybierają której klasy chcą zobaczyć oceny     #}
   {% if user.user_type == 'teacher' or user.user_type == 'admin' %}
 
       <div class="dropdown">
@@ -20,10 +24,9 @@
           </ul>
       </div>
 
-    {% else %}
+  {% else %}
 
-
-
+{#      wyświetlenie ocen ucznia    #}
   {% if user.user_type == 'student'%}
         <h1>Your grades</h1>
   {% else %}
@@ -39,6 +42,7 @@
     </div>
     <hr>
 
+{#      dla każdego przedmiotu  #}
     {% for subject in subjects %}
      <div class="row mb-3 text-center">
       <div class="col-md-2 themed-grid-col">{{ subject.subject_name }}</div>
@@ -47,6 +51,8 @@
         sum = 0;
         denom = 0;
       </script>
+
+{#    wyświetlenie ocen, dodanie ich do liczonej średniej ważonej #}
           {% for grade in child.grades %}
               {% if grade.subject.subject_name == subject.subject_name and grade.is_final == false %}
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal-{{ subject.subject_id }}-{{ child.student_id }}-{{ loop.index }}">{{ grade.type }}</button>
@@ -54,7 +60,8 @@
                     sum += {{ grade.type }} * {{ grade.weight }};
                     denom += {{ grade.weight }};
                   </script>
-              <!-- Modal -->
+
+{#    dodanie modala do wyświetlania szczegółów oceny   #}
                     <div class="modal fade" id="grade-modal-{{ subject.subject_id }}-{{ child.student_id }}-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content rounded-4 shadow">
@@ -79,8 +86,12 @@
             {% endfor %}
 
       </div>
+
+{#     wyświetlenie średniej ocen   #}
       <div class="col-md-1 themed-grid-col"><script>document.write((Math.round(sum*100/denom)/100).toString())</script></div>
-      <div class="col-md-1 themed-grid-col">
+
+ {#      szukanie oceny końcowej i jeśli istnieje, wyświetlenie jej #}
+         <div class="col-md-1 themed-grid-col">
             <script> final = '-';</script>
             {% for grade in child.grades %}
                 {% if grade.is_final == true and grade.subject.subject_name == subject.subject_name %}

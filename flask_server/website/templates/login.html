@@ -1,3 +1,5 @@
+{#  strona do logowania     #}
+
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
   <head><script src="/static/js/color-modes.js"></script>
@@ -156,19 +158,32 @@
 
 
 <main class="form-signin w-100 m-auto">
+
+{#  obsługa alertów     #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == 'error' %}
+                    <div class="alert alert-danger alter-dismissible fade show" role="alert">
+                        {{ message }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-success alter-dismissible fade show" role="alert">
+                        {{ message }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+{#  logowanie   #}
 	<form action="#" method="post">
         <center><img class="mb-4" src="/static/panda_ciemny.png" alt="" width="172" height="157">
         <h1 class="h3 mb-3 fw-normal">Panda 3.0</h1>
         </center>
 
         <div class="form-floating">
-    <!--      wersja bootrstapa-->
-    <!--      <input type="username" class="form-control" id="floatingInput" placeholder="Username">-->
-    <!--      <label for="floatingInput">Username</label>-->
-    <!--      wersja z internetu-->
-    <!--      <label for="username">Username:</label>-->
-    <!--	  <input type="text" name="username" />-->
-    <!--      wersja moja-->
               <input type="username"
                      class="form-control"
                      id="username"
@@ -177,13 +192,6 @@
               <label for="username">Username</label>
         </div>
         <div class="form-floating">
-          <!--wersja bootstrapa-->
-    <!--      <input type="password" class="form-control" id="floatingPassword" placeholder="Password">-->
-    <!--      <label for="floatingPassword">Password</label>-->
-    <!--      wersja z internetu-->
-    <!--      <label for="password">Password:</label>-->
-    <!--	  <input type="password" name="password" />-->
-    <!--      wersja moja-->
               <input type="password"
                      class="form-control"
                      id="password"
@@ -201,7 +209,6 @@
     <!--    </div>-->
         <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
 
-          <!--    <p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2023</p>-->
   </form>
 </main>
 <script src="/static/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>

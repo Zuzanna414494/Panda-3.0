@@ -1,3 +1,5 @@
+{#  strona do wyświetlenia informacji o użytkowniku     #}
+
 {% extends "base.html" %}
 {% block title %}Profile{% endblock %}
 
@@ -8,6 +10,7 @@
 
   <div class="container">
 
+{#  wyświetlenie danych     #}
     <h1>Your profile</h1>
 
   <div class="my-3 p-3 bg-body rounded shadow-sm">
@@ -143,12 +146,15 @@
       {% endif %}
     </div>
 
+
+{#  możliwość dodania ogłoszeń (dla nauczyciela) #}
           {% if user.user_type == 'teacher' %}
             <ul class="nav nav-pills">
                 <li class="nav-item"><a href="http://127.0.0.1:5000/add-announcement" class="nav-link">Add an announcement</a></li>
             </ul>
             {% endif %}
 
+{#  możliwość dodania nowego użytkownika (dla admina)   #}
         {% if user.user_type == 'admin' %}
             <ul class="nav nav-pills">
                 <li class="nav-item"><a href="http://127.0.0.1:5000/sign-up" class="nav-link">Create an account</a></li>
@@ -156,6 +162,8 @@
         {% endif %}
 
     <br><br>
+
+{#  wyszukiwanie innych użytkowników (dla wszystkich)   #}
     <h1>Search for other profiles:</h1>
     <nav class="navbar navbar-expand navbar-dark bg-dark">
       <form method="POST" role="search" >
@@ -168,6 +176,8 @@
           >
         </form>
     </nav>
+
+{#  wyniki wyszukiwania     #}
     {% if searched != null %}
         Searched for: {{ searched }}
         <br><br>

@@ -1,3 +1,5 @@
+{#  strona do edycji ocen dla nauczyciela i admina  #}
+
 {% extends "base.html" %}
 {% block title %}Grades {{ clas.class_name }}{% endblock %}
 
@@ -7,6 +9,7 @@
 <main>
 
 
+{#  nauczyciel lub admin wybierają, której klasy chcą zobaczyć oceny     #}
 <div class="container">
     <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -18,11 +21,14 @@
           </ul>
       </div>
 
+
+{#   wyświetlenie ocen danej klasy     #}
     <div class="fs-4" align="middle" >Class: {{ clas.class_name }}
         <br> Profile: {{ clas.class_profile }}
     </div>
     <br>
 
+{# dla każdego przedmiotu, którego dany nauczyciel uczy, lub dla każdego przedmiotu w przypadku admina     #}
     {% for subject in subjects %}
         <br>
         <div class="fs-4"><strong>{{ subject.subject_name }}</strong></div>
@@ -38,6 +44,7 @@
         </div>
         <hr>
 
+{#  wyświetlenie listy uczniów    #}
         {% for student in students %}
              <div class="row mb-3 text-center">
                  <div class="col-md-1 themed-grid-col">{{ student.gradebook_nr }}</div>
@@ -48,6 +55,8 @@
                     sum = 0;
                     denom = 0;
                   </script>
+
+{#  wyświetlenie ocen danego ucznia w kolejności od najwcześniej dodanej     #}
                       {% for grade in student.grades | sort(attribute='grade_id') %}
                           {% if grade.subject.subject_name == subject.subject_name and grade.is_final == false %}
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal-{{ subject.subject_id }}-{{ student.student_id }}-{{ loop.index }}">{{ grade.type }}</button>
@@ -55,7 +64,8 @@
                                 sum += {{ grade.type }} * {{ grade.weight }};
                                 denom += {{ grade.weight }};
                               </script>
-                          <!-- Modal -->
+
+{#  dodanie modala do wyświetlania szczegółów ocen #}
                                 <div class="modal fade" id="grade-modal-{{ subject.subject_id }}-{{ student.student_id }}-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content rounded-4 shadow">
@@ -73,9 +83,11 @@
                                             <p>Date: {{ grade.add_date }}</p>
                                             <br>
 
+{#  możliwość zmiany oceny  #}
                                             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal-change-{{ subject.subject_name }}-{{ student.student_id }}-{{ loop.index }}">Change</button>
                                             <br>
                                               <br>
+{#  możliwość usunięcia oceny   #}
                                             <form action="#" method="post">
                                                 <div class="form-floating">
                                                         <input type="hidden"
@@ -100,6 +112,7 @@
                                         </div>
                                       </div>
 
+{#  modal obsługujący zmianę oceny  #}
                               <div class="modal fade" id="grade-modal-change-{{ subject.subject_name }}-{{ student.student_id }}-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                                 <div class="modal-content rounded-4 shadow">
@@ -136,13 +149,6 @@
                                                                     <label for="description">Description</label>
                                                                 </div>
                                                                 <br>
-                                                                  <div class="form-floating">
-                                                                            <input type="hidden"
-                                                                                   class="form-control"
-                                                                                   id="is_final"
-                                                                                   name="is_final"
-                                                                                   value="false"/>
-                                                                    </div>
                                                                 <div class="form-floating">
                                                                             <input type="hidden"
                                                                                    class="form-control"
@@ -172,10 +178,12 @@
                         {% endfor %}
 
                 </div>
+{#  wyświetlanie średniej ocen ucznia   #}
                 <div class="col-md-1 themed-grid-col"><script>if(sum !== 0) document.write((Math.round(sum*100/denom)/100).toString());
                                                                 else document.write("-");
                                                         </script></div>
 
+{#  wyświetlanie oceny końcowej     #}
                  <div class="col-md-1 themed-grid-col">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal-final-{{ subject.subject_name }}-{{ student.student_id }}">
 
@@ -190,6 +198,7 @@
                         <script>document.write(final_grade.toString())</script>
                     </button>
 
+{#  modal do dodania lub zmiany oceny końcowej  #}
                     <div class="modal fade" id="grade-modal-final-{{ subject.subject_name }}-{{ student.student_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content rounded-4 shadow">
@@ -232,13 +241,6 @@
                                             <div class="form-floating">
                                                     <input type="hidden"
                                                            class="form-control"
-                                                           id="change"
-                                                           name="change"
-                                                           value="false"/>
-                                            </div>
-                                            <div class="form-floating">
-                                                    <input type="hidden"
-                                                           class="form-control"
                                                            id="final_id"
                                                            name="final_id"
                                                            value="{{ vars.final }}"/>
@@ -256,6 +258,7 @@
                 <div class="col-md-1 themed-grid-col">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#grade-modal-add-{{ subject.subject_name }}-{{ loop.index }}">add</button>
 
+{#  przycisk i modal do dodanie nowej oceny     #}
                     <div class="modal fade" id="grade-modal-add-{{ subject.subject_name }}-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content rounded-4 shadow">
@@ -306,20 +309,6 @@
                                                    name="student_id"
                                                    value="{{ student.student_id }}"/>
                                         </div>
-                                          <div class="form-floating">
-                                                    <input type="hidden"
-                                                           class="form-control"
-                                                           id="is_final"
-                                                           name="is_final"
-                                                           value="false"/>
-                                            </div>
-                                      <div class="form-floating">
-                                            <input type="hidden"
-                                                   class="form-control"
-                                                   id="change"
-                                                   name="change"
-                                                   value="false"/>
-                                    </div>
                                     <button class="btn btn-primary w-100 py-2" type="submit">Add</button>
                                     <br>
                                     <br>
