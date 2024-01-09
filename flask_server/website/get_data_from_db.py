@@ -1,11 +1,7 @@
 import psycopg2
-from .models import *
-from flask_login import current_user
 
 
 def get_plan():
-    days_of_week = []
-
     monday = []
     tuesday = []
     wednesday = []
@@ -23,8 +19,6 @@ def get_plan():
 
     print(days_of_week)
 
-
-# get_plan()
 
 def readLessons(user_id_l, user_type):
     con = psycopg2.connect(database="dziennik_baza",
@@ -116,3 +110,69 @@ def readClasses():
         classes.append(x)
     classes.sort(key=lambda d: d['class_name'])
     return classes
+
+
+def search(searched):
+    con = psycopg2.connect(database="dziennik_baza",
+                           user="dziennik_baza_user",
+                           password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc",
+                           host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com",
+                           port="5432")
+    cur = con.cursor()
+    cur.execute(
+        "SELECT name, surname "
+        "FROM students "
+        "WHERE name ilike %(searched)s or surname ilike %(searched)s ",
+        {'searched': '%' + searched + '%'}
+    )
+    students_data = cur.fetchall()
+    cur.close()
+    users = []
+    for line in students_data:
+        line_str = ', '.join(map(str, line))
+        name, surname = line_str.split(", ")
+        x = {
+            "name": name,
+            "surname": surname,
+        }
+        users.append(x)
+
+    cur = con.cursor()
+    cur.execute(
+        "SELECT name, surname "
+        "FROM teachers "
+        "WHERE name ilike %(searched)s or surname ilike %(searched)s ",
+        {'searched': '%' + searched + '%'}
+    )
+    teachers_data = cur.fetchall()
+    cur.close()
+    for line in teachers_data:
+        line_str = ', '.join(map(str, line))
+        name, surname = line_str.split(", ")
+        x = {
+            "name": name,
+            "surname": surname,
+        }
+        users.append(x)
+
+    cur = con.cursor()
+    cur.execute(
+        "SELECT name, surname "
+        "FROM parents "
+        "WHERE name ilike %(searched)s or surname ilike %(searched)s ",
+        {'searched': '%' + searched + '%'}
+    )
+    parents_data = cur.fetchall()
+    cur.close()
+    con.close()
+    for line in parents_data:
+        line_str = ', '.join(map(str, line))
+        name, surname = line_str.split(", ")
+        x = {
+            "name": name,
+            "surname": surname,
+        }
+        users.append(x)
+
+    users.sort(key=lambda d: d['surname'])
+    return users

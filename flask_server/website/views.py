@@ -172,7 +172,16 @@ def add_announcement():
     return render_template("add_announcement.html", user=current_user)
 
 
-@views.route('/profile')
+@views.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    if request.method == "POST":
+        searched = request.form.get("search")
+        # users = Students.query.filter(Students.name.ilike('%' + searched + '%'))
+        # users += Students.query.filter(Students.surname.ilike('%' + searched + '%'))
+        users = search(searched)
+        print(users)
+        return render_template("profile.html", user=current_user, searched=searched, users=users)
+
     return render_template("profile.html", user=current_user)
+

@@ -155,6 +155,27 @@
             </ul>
         {% endif %}
 
+    <br><br>
+    <h1>Search for other profiles:</h1>
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+      <form method="POST" role="search" >
+          <input class="form-control"
+                 type="search"
+{#                 value="{{ request.form.search}}"#}
+                 placeholder="Search"
+                 aria-label="Search"
+                 name="search"
+          >
+        </form>
+    </nav>
+    {% if searched != null %}
+        Searched for: {{ searched }}
+        <br><br>
+        {% for user in users %}
+            {{ user.name }} {{ user.surname }}
+            <br>
+        {% endfor %}
+    {% endif %}
 
 </div>
 </main>

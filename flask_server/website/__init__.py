@@ -1,23 +1,24 @@
-from flask import Flask, redirect
+from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from .LuckyNumberGenerator import generateLuckyNumber
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
-import time
 from sqlalchemy import and_
 db = SQLAlchemy()
 
 
 def create_app():
+    # stworzenie instancji Flask
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "ENTER YOUR SECRET KEY"
 
-    app.config[
-        'SQLALCHEMY_DATABASE_URI'] = 'postgresql://dziennik_baza_user:MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc@dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com/dziennik_baza'
+    # połączenie z bazą danych
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dziennik_baza_user:MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc@dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com/dziennik_baza'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
+    # stworzenie blueprint - jeden do autoryzacji (logowanie, wylogowywanie i rejestracja) i jeden do obsługi reszty funkcjonalności
     from .views import views
     from .auth import auth
 
@@ -26,6 +27,7 @@ def create_app():
 
     from .models import Users, Students, Teachers, Parents, Announcements
 
+    # deklaracja LoginManager do obsługi logowania i zapamiętywania zalogowanych użytkowników
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
@@ -56,8 +58,8 @@ def create_app():
                 db.session.commit()
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(archive_old_announcements, trigger='cron', hour=0) # Uruchomienie codziennie o
-    # północy
+    scheduler.add_job(archive_old_announcements, trigger='cron', hour=0)
+    # Uruchomienie codziennie o północy
 
     scheduler.start()
 
