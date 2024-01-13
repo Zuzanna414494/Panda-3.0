@@ -1,3 +1,5 @@
+{#  strona do wyświetlania planu dla nauczyciela i admina   #}
+
 {% extends "base.html" %}
 {% block title %}Plan{% endblock %}
 {% set active_page = "plan" %}
@@ -11,20 +13,10 @@
   }
 </style>
 
+
   <div class="container">
-  {% if user.user_type == 'teacher' %}
-    <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Choose class</button>
-          <ul class="dropdown-menu">
-              {% for class in classes %}
-                      <li><a class="dropdown-item" href="{{ url_for('views.plan_teacher', class_name=class['class_name'])}}">{{ class['class_name'] }}</a></li>
-              {% endfor %}
-          </ul>
-      </div>
-      <br>
-  {% elif user.user_type == 'admin' %}
-      <div class="dropdown">
+  {#  wybór klasy, której plan zajęć chce się zobaczyć     #}
+     <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Choose class</button>
           <ul class="dropdown-menu">
@@ -35,7 +27,8 @@
           </ul>
       </div>
       <br>
-      <div class="dropdown">
+    {#  wybór nauczyciela, którego plan zajęć chce się zobaczyć     #}
+     <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Choose teacher</button>
           <ul class="dropdown-menu">
@@ -46,16 +39,61 @@
           </ul>
       </div>
       <br>
-  {% elif user.user_type == 'student' or user.user_type == 'teacher' %}
-        <h1>Your plan</h1>
-  {% else %}
-        <h1>Your child's plan</h1>
-  {% endif %}
+
+
+{% if want_teacher==True %}
+{#  wyświetlenie planu  #}
+    <h1>Plan of teacher: {{ teacher['full_name'] }}</h1>
   <br>
 
-{% if user.user_type != 'admin' %}
 
     <div class="table-responsive">
+        <table class="table table-sm table-striped table-bordered text-center">
+            <thead>
+                <tr>
+                     <th style="width: 5%;"></th>
+                <th style="width: 16%; min-width: 100px;">Time</th>
+                <th style="width: 16%; min-width: 100px;">Monday</th>
+                <th style="width: 16%; min-width: 100px;">Tuesday</th>
+                <th style="width: 16%; min-width: 100px;">Wednesday</th>
+                <th style="width: 16%; min-width: 100px;">Thursday</th>
+                <th style="width: 16%; min-width: 100px;">Friday</th>
+                </tr>
+            </thead>
+              <tbody id="allRows">
+                {% set time_slots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'] %}
+                {% set end_time_slots = ['08:45', '09:45', '10:45', '11:45', '12:45', '13:45', '14:45', '15:45'] %}
+                {% for time_slot in time_slots %}
+                    <tr>
+                       <td>{{ loop.index }}</td>
+                        <td>{{ time_slot }} - {{ end_time_slots[loop.index - 1] }}</td>
+                        {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+                            <td>
+                                {% for lesson in zajecia %}
+                                    {% if lesson['day_of_week'] == day and lesson['start_time'] == time_slot %}
+                                        {{ lesson['subject'] }}
+                                        ({{ lesson['building'] }}) <br>
+                                        {% if lesson['test'] != 'None' %}
+                                        <span style="color: red;">{{ lesson['test'] }}</span>
+                                        {% endif %}
+
+                                    {% else %}
+
+                                        {# Jeśli nie ma zajęć o danej godzinie i dniu, wstaw pustą komórkę #}
+                                    {% endif %}
+
+                                {% endfor %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  {% else %}
+    <h1>Plan of class: {{ class_name }}</h1>
+  <br>
+  <div class="table-responsive">
         <table class="table table-sm table-striped table-bordered text-center">
             <thead>
                 <tr>

@@ -1,7 +1,7 @@
 # plik z funkcjami służącymi do pobrania danych z bazy danych oraz z ich funkcjami pomocniczymi
 
 import psycopg2
-
+from .models import *
 
 def get_plan():
     monday = []
@@ -71,9 +71,7 @@ def readLessons(user_id_l, user_type):
     zajecia = []
 
     for line in lessons_data:
-        # Konwertuj każdą krotkę na łańcuch, łącząc jej elementy za pomocą przecinków
         line_str = ', '.join(map(str, line))
-        # Teraz możemy podzielić łańcuch na poszczególne części
         subject, day_of_week, start_time, end_time, building, test = line_str.split(", ")
         lesson = {
             "subject": subject,
@@ -86,6 +84,29 @@ def readLessons(user_id_l, user_type):
         zajecia.append(lesson)
     return zajecia
 
+def read_lessons(teacher_id):
+    teacher = Teachers.query.get(teacher_id)
+
+    subjects = teacher.subjects
+
+    lesson_info_list = []
+
+    for subject in subjects:
+        lessons = Lessons.query.filter_by(subject_id=subject.subject_id).all()
+        for lesson in lessons:
+            if lesson.test==None:
+                lesson.test=" "
+            lesson_info = {
+                "subject": subject.subject_name,
+                "day_of_week": lesson.day_of_week,
+                "start_time": lesson.start_time.strftime('%H:%M'),
+                "end_time": lesson.end_time.strftime('%H:%M'),
+                "building":lesson.building,
+                "test": lesson.test
+            }
+            lesson_info_list.append(lesson_info)
+
+    return lesson_info_list
 
 # funkcja, która pobiera nazwę i profil każdej klasy w bazie danych
 def readClasses():
@@ -199,3 +220,24 @@ def add_names_to_dict(users, data):
             "user_type": user_type
         }
         users.append(x)
+def read_teachers():
+    teachers_list=Teachers.query.all()
+    teachers_info = []
+    for teacher in teachers_list:
+        teacher_info = {
+            'teacher_id': teacher.teacher_id,
+            'name': teacher.name,
+            'surname': teacher.surname,
+            'full_name':teacher.name+" "+teacher.surname
+        }
+        teachers_info.append(teacher_info)
+    return teachers_info
+def read_teacher(teacher_id):
+    teacher=Teachers.query.get(teacher_id)
+    teacher_info = {
+        'teacher_id': teacher.teacher_id,
+        'name': teacher.name,
+        'surname': teacher.surname,
+        'full_name':teacher.name+" "+teacher.surname
+    }
+    return teacher_info

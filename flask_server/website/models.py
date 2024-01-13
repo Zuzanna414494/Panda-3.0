@@ -117,6 +117,7 @@ class Lessons(db.Model, UserMixin):
     day_of_week = db.Column(db.String(15), nullable=False)
     start_time = db.Column(db.DateTime(timezone=True), nullable=False)
     end_time = db.Column(db.DateTime(timezone=True), nullable=False)
+    building=db.Column(db.String(20),nullable=True)
     test = db.Column(db.String(80), nullable=True)
 
 

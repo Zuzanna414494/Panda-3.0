@@ -161,7 +161,8 @@ def plan():
     # jeśli użytkownik to admin, to wczytanie wszystkich klas - będzie mógł wybrać której klasy plan chce zobaczyć
     elif current_user.user_type == 'admin':
         classes = readClasses()
-        return render_template("plan.html", user=current_user, classes=classes)
+        teachers = read_teachers()
+        return render_template("plan.html", user=current_user, classes=classes,teachers=teachers)
 
     # jeśli użytkownik to nauczyciel, to wczytanie wszystkich klas - będzie mógł wybrać której klasy plan chce zobaczyć
     # - oraz wczytanie jego własnych zajęć (na początku zobaczy też swój plan)
@@ -179,6 +180,7 @@ def plan():
 
 # endpoint wyświetlający plan zajęć danej klasy (dla nauczyciela i admina)
 @views.route('/plan/<string:class_name>', methods=["GET", "POST"])
+@login_required
 def plan_teacher(class_name):
 
     # wczytanie wszystkich klas, aby można było którąś wybrać
@@ -190,6 +192,29 @@ def plan_teacher(class_name):
     return render_template("plan_teacher.html", user=current_user, class_name=class_name, zajecia=zajecia,
                            classes=classes)
 
+@views.route('/plan/<string:class_name>a', methods=["GET", "POST"])
+@login_required
+def plan_for_admin_classes(class_name):
+    if current_user.user_type == 'admin':
+        classes = readClasses()
+        child = Students.query.filter_by(class_name=class_name).first()
+        zajecia = readLessons(child.student_id, 'admin')
+        teachers = read_teachers()
+        want_teacher=False
+        return render_template("plan_admin.html", user=current_user, zajecia=zajecia,classes=classes,
+                               class_name=class_name, teachers=teachers,want_teacher=want_teacher)
+
+@views.route('/plan/<int:teacher_id>', methods=["GET", "POST"])
+@login_required
+def plan_for_admin_teachers(teacher_id):
+    if current_user.user_type == 'admin':
+        zajecia = read_lessons(teacher_id)
+        teachers=read_teachers()
+        classes = readClasses()
+        teacher=read_teacher(teacher_id)
+        want_teacher=True
+        return render_template("plan_admin.html", user=current_user, zajecia=zajecia,teachers=teachers,
+                               teacher=teacher,classes=classes,want_teacher=want_teacher)
 
 @views.route('/announcements')
 @login_required
