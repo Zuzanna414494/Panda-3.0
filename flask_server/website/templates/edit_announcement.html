@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+
+{% block content %}
+<main>
+<style>
+    /* Styl dla niestandardowego pola textarea */
+    form textarea.form-control{
+        height: 500px;
+    }
+</style>
+ <div class="container">
+    <h1>Edit your announcement</h1>
+    <br>
+    <form action="#" method="post">
+        <div class="form-floating" id="form">
+            <textarea class="form-control" id="description" name="description" placeholder="Enter description"
+                      style="height: 465px;"
+                      onkeydown="if(event.keyCode === 13) {event.preventDefault(); this.value += '\n';} "></textarea>
+        </div>
+        <button id='my_button' class="btn btn-primary w-100 py-2" type="button" onclick="editAnnouncement()"
+                data-announcement-id="{{ announcement_id }}">Edit</button>
+    </form>
+</div>
+<script>
+    document.getElementById('form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Uniknij domyślnego zachowania formularza
+    editAnnouncement()
+});
+    function editAnnouncement()
+    {
+    const announcementId = document.getElementById('my_button').getAttribute('data-announcement-id')
+    let description = document.getElementById('description').value
+    fetch(`/edit_announcement/${announcementId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ announcement_id: announcementId,description: description })
+    })
+    .then(response => {
+        if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+        return response.json();
+    } else {
+        window.location.href = response.url;  // Redirect to the provided URL
+    }
+    })
+    .then(data => {
+        console.log('Announcement edited:', data);
+    })
+    .catch(error => console.error('Error:', error));
+    console.log("wychodzi")
+}
+
+
+</script>
+</main>
+{% endblock %}
+
+

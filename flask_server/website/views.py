@@ -178,7 +178,7 @@ def plan():
     return render_template("plan.html", user=current_user, zajecia=zajecia)
 
 
-# endpoint wyświetlający plan zajęć danej klasy (dla nauczyciela i admina)
+# endpoint wyświetlający plan zajęć danej klasy dla nauczyciela
 @views.route('/plan/<string:class_name>', methods=["GET", "POST"])
 @login_required
 def plan_teacher(class_name):
@@ -192,6 +192,7 @@ def plan_teacher(class_name):
     return render_template("plan_teacher.html", user=current_user, class_name=class_name, zajecia=zajecia,
                            classes=classes)
 
+# endpoint wyświetlający plan zajęć danej klasy dla admina
 @views.route('/plan/<string:class_name>a', methods=["GET", "POST"])
 @login_required
 def plan_for_admin_classes(class_name):
@@ -204,6 +205,7 @@ def plan_for_admin_classes(class_name):
         return render_template("plan_admin.html", user=current_user, zajecia=zajecia,classes=classes,
                                class_name=class_name, teachers=teachers,want_teacher=want_teacher)
 
+# endpoint wyświetlający plan zajęć danenego nauczyciela klasy dla admina
 @views.route('/plan/<int:teacher_id>', methods=["GET", "POST"])
 @login_required
 def plan_for_admin_teachers(teacher_id):
@@ -216,14 +218,16 @@ def plan_for_admin_teachers(teacher_id):
         return render_template("plan_admin.html", user=current_user, zajecia=zajecia,teachers=teachers,
                                teacher=teacher,classes=classes,want_teacher=want_teacher)
 
+# endpoint wyświetlający ogłoszenia
 @views.route('/announcements')
 @login_required
 def announcements():
     filtered_announcements = Announcements.query.filter(Announcements.in_archive == False).order_by(
         Announcements.add_date.desc()).all()
-    return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements)
+    return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements,
+                           user_id=current_user.user_id)
 
-
+# endpoint wyświetlający szczegóły ogłoszenia
 @views.route('/announcement/<int:announcement_id>', methods=["GET", "POST"])
 def announcement_details(announcement_id):
     announcement = Announcements.query.get_or_404(announcement_id)
@@ -236,6 +240,29 @@ def announcement_details(announcement_id):
         return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements)
     return render_template('announcement_details.html', user=current_user, announcement=announcement)
 
+# endpoint służący do edytowania ogłoszeń
+@views.route('/edit_announcement/<int:announcement_id>', methods=["GET","POST"])
+@login_required
+def edit_announcement(announcement_id):
+    announcement = Announcements.query.get_or_404(announcement_id)
+    if request.method=="POST":
+        data = request.json
+        announcement_id = data.get("announcement_id")
+        new_description = data.get("description")
+        # Znajdujemy ogłoszenie o podanym announcement_id
+        announcement = Announcements.query.filter_by(announcement_id=announcement_id).first()
+        if announcement is not None:
+            try:
+                announcement.description = new_description
+                db.session.commit()
+                return redirect(url_for('views.announcements'))
+            except Exception as e:
+                db.session.rollback()
+                return jsonify({"error": "Failed to update description", "details": str(e)}), 500
+        else:
+            return jsonify({"error": "Announcement not found"}), 404
+
+    return render_template("edit_announcement.html",user=current_user,announcement_id=announcement_id,announcement=announcement)
 
 # endpoint służący do dodawania nowych ogłoszeń
 @views.route('/add-announcement', methods=["GET", "POST"])
