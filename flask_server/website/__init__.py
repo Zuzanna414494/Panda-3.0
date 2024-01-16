@@ -9,14 +9,19 @@ from sqlalchemy import and_
 db = SQLAlchemy()
 
 
-def create_app():
+def create_app(config_name=None):
     # stworzenie instancji Flask
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "ENTER YOUR SECRET KEY"
 
-    # połączenie z bazą danych
-    app.config[
+    if config_name == 'testing':
+        app.config["SECRET_KEY"] = "TEST_SECRET_KEY"
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['TESTING'] = True
+    else:
+        app.config["SECRET_KEY"] = "ENTER YOUR SECRET KEY"
+        app.config[
         'SQLALCHEMY_DATABASE_URI'] = 'postgresql://dziennik_baza_user:MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc@dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com/dziennik_baza'
+
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
