@@ -13,8 +13,8 @@ class Users(db.Model, UserMixin):
     user_type = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(80), nullable=False)
     phone_nr = db.Column(db.Integer, nullable=False)
-    photo = db.Column(db.String(80), nullable=False)
-    logged_in = db.Column(db.Boolean, nullable=False)
+    photo = db.Column(db.String(80), nullable=True)
+    logged_in = db.Column(db.Boolean, nullable=True)
 
     # relacje zdefiniowane na tabeli users
     student = db.relationship('Students')
