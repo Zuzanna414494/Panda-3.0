@@ -1,4 +1,6 @@
 # Panda 3.0
+## Komentarz odnośnie projektu
+To jest projekt grupowy robiony na zajęcia z Inżynierii Oprogramowania. 
 
 ## Opis
 Panda 3.0 to nowoczesny system zarządzania szkołą, który oferuje szeroki zakres funkcjonalności zarówno dla nauczycieli, 
