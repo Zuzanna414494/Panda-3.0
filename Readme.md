@@ -13,6 +13,7 @@ Projekt został stworzony z użyciem:
  - HTML 
  - CSS 
  - JavaScript
+ - Bootstrap
 
 ## Instalacja i Uruchomienie
 1. Sklonuj repozytorium
