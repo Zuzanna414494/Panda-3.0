@@ -152,7 +152,6 @@ def grades_teacher(class_name):
 @views.route('/plan')
 @login_required
 def plan():
-
     # jeśli użytkownik to rodzic, to pobranie modelu jego dziecka i wczytanie jego zajęć
     if current_user.user_type == 'parent':
         child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
@@ -162,7 +161,7 @@ def plan():
     elif current_user.user_type == 'admin':
         classes = readClasses()
         teachers = read_teachers()
-        return render_template("plan.html", user=current_user, classes=classes,teachers=teachers)
+        return render_template("plan.html", user=current_user, classes=classes, teachers=teachers)
 
     # jeśli użytkownik to nauczyciel, to wczytanie wszystkich klas - będzie mógł wybrać której klasy plan chce zobaczyć
     # - oraz wczytanie jego własnych zajęć (na początku zobaczy też swój plan)
@@ -182,7 +181,6 @@ def plan():
 @views.route('/plan/<string:class_name>', methods=["GET", "POST"])
 @login_required
 def plan_teacher(class_name):
-
     # wczytanie wszystkich klas, aby można było którąś wybrać
     classes = readClasses()
     # wczytanie zajęć uczniów z danej klasy
@@ -191,6 +189,7 @@ def plan_teacher(class_name):
 
     return render_template("plan_teacher.html", user=current_user, class_name=class_name, zajecia=zajecia,
                            classes=classes)
+
 
 # endpoint wyświetlający plan zajęć danej klasy dla admina
 @views.route('/plan/<string:class_name>a', methods=["GET", "POST"])
@@ -201,9 +200,10 @@ def plan_for_admin_classes(class_name):
         child = Students.query.filter_by(class_name=class_name).first()
         zajecia = readLessons(child.student_id, 'admin')
         teachers = read_teachers()
-        want_teacher=False
-        return render_template("plan_admin.html", user=current_user, zajecia=zajecia,classes=classes,
-                               class_name=class_name, teachers=teachers,want_teacher=want_teacher)
+        want_teacher = False
+        return render_template("plan_admin.html", user=current_user, zajecia=zajecia, classes=classes,
+                               class_name=class_name, teachers=teachers, want_teacher=want_teacher)
+
 
 # endpoint wyświetlający plan zajęć danenego nauczyciela klasy dla admina
 @views.route('/plan/<int:teacher_id>', methods=["GET", "POST"])
@@ -211,12 +211,13 @@ def plan_for_admin_classes(class_name):
 def plan_for_admin_teachers(teacher_id):
     if current_user.user_type == 'admin':
         zajecia = read_lessons(teacher_id)
-        teachers=read_teachers()
+        teachers = read_teachers()
         classes = readClasses()
-        teacher=read_teacher(teacher_id)
-        want_teacher=True
-        return render_template("plan_admin.html", user=current_user, zajecia=zajecia,teachers=teachers,
-                               teacher=teacher,classes=classes,want_teacher=want_teacher)
+        teacher = read_teacher(teacher_id)
+        want_teacher = True
+        return render_template("plan_admin.html", user=current_user, zajecia=zajecia, teachers=teachers,
+                               teacher=teacher, classes=classes, want_teacher=want_teacher)
+
 
 # endpoint wyświetlający ogłoszenia
 @views.route('/announcements')
@@ -226,6 +227,7 @@ def announcements():
         Announcements.add_date.desc()).all()
     return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements,
                            user_id=current_user.user_id)
+
 
 # endpoint wyświetlający szczegóły ogłoszenia
 @views.route('/announcement/<int:announcement_id>', methods=["GET", "POST"])
@@ -240,12 +242,13 @@ def announcement_details(announcement_id):
         return render_template("announcements.html", user=current_user, filtered_announcements=filtered_announcements)
     return render_template('announcement_details.html', user=current_user, announcement=announcement)
 
+
 # endpoint służący do edytowania ogłoszeń
-@views.route('/edit_announcement/<int:announcement_id>', methods=["GET","POST"])
+@views.route('/edit_announcement/<int:announcement_id>', methods=["GET", "POST"])
 @login_required
 def edit_announcement(announcement_id):
     announcement = Announcements.query.get_or_404(announcement_id)
-    if request.method=="POST":
+    if request.method == "POST":
         data = request.json
         announcement_id = data.get("announcement_id")
         new_description = data.get("description")
@@ -262,13 +265,14 @@ def edit_announcement(announcement_id):
         else:
             return jsonify({"error": "Announcement not found"}), 404
 
-    return render_template("edit_announcement.html",user=current_user,announcement_id=announcement_id,announcement=announcement)
+    return render_template("edit_announcement.html", user=current_user, announcement_id=announcement_id,
+                           announcement=announcement)
+
 
 # endpoint służący do dodawania nowych ogłoszeń
 @views.route('/add-announcement', methods=["GET", "POST"])
 @login_required
 def add_announcement():
-
     if request.method == "POST":
 
         # sprawdzenie, czy poprawnie wprowadzono dane
@@ -293,7 +297,6 @@ def add_announcement():
 @views.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-
     # wyszukiwanie innych użytkowników
     if request.method == "POST":
         searched = request.form.get("search")
@@ -304,9 +307,17 @@ def profile():
 
 
 # endpoint służący do wyświetlania strony profilowej wyszukanego użytkownika
-@views.route('/profile/<int:user_id>')
+@views.route('/profile/<int:user_id>', methods=['GET', 'POST'])
 @login_required
 def searched_profile(user_id):
     searched_user = Users.query.filter_by(user_id=user_id).first()
+
+    # if request.method == "POST":
+    #     if request.form.get("delete"):
+    #         Students.query.filter_by(student_id=request.form.get("user_id_delete")).delete()
+    #         # Users.query.filter_by(user_id=request.form.get("user_id_delete")).delete()
+    #         db.session.commit()
+    #         flash('User deleted!', category='success')
+    #         return redirect(url_for('views.profile'))
 
     return render_template("searched_profile.html", user=current_user, searched_user=searched_user)

@@ -45,7 +45,7 @@
         <hr>
 
 {#  wyświetlenie listy uczniów    #}
-        {% for student in students %}
+        {% for student in students | sort(attribute='gradebook_nr') %}
              <div class="row mb-3 text-center">
                  <div class="col-md-1 themed-grid-col">{{ student.gradebook_nr }}</div>
                  <div class="col-md-2 themed-grid-col">{{ student.name }} {{ student.surname }}</div>
