@@ -38,7 +38,7 @@ class Students(db.Model, UserMixin):
     address = db.Column(db.String(80), nullable=False)
 
     # relacje zdefiniowane na tabeli students
-    parent = db.relationship('Parents')
+    # parent = db.relationship('Parents')
     grades = db.relationship('Grades')
 
 
@@ -107,7 +107,7 @@ class Subjects(db.Model, UserMixin):
     teacher_id = db.Column(db.Integer, db.ForeignKey('teachers.teacher_id'), nullable=False)
 
     # relacje zdefiniowane na tabeli subjects
-    grades = db.relationship('Grades')
+    # grades = db.relationship('Grades')
 
 
 # model zajęć (odpowiednik tabeli lessons)

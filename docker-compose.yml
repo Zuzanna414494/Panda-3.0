@@ -1,0 +1,17 @@
+version: '3.9'
+
+name: panda
+
+services:
+  db:
+    image: postgres
+    container_name: panda-db
+    ports:
+      - "5723:5432"
+    restart: always
+    environment:
+      POSTGRES_DB: panda-db
+      POSTGRES_USER: panda
+      POSTGRES_PASSWORD: panda
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql

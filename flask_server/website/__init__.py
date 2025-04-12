@@ -1,3 +1,4 @@
+import yaml
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
@@ -9,19 +10,14 @@ from sqlalchemy import and_
 db = SQLAlchemy()
 
 
-def create_app(config_name=None):
+def create_app():
     # stworzenie instancji Flask
     app = Flask(__name__)
 
-    if config_name == 'testing':
-        app.config["SECRET_KEY"] = "TEST_SECRET_KEY"
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-        app.config['TESTING'] = True
-    else:
-        app.config["SECRET_KEY"] = "ENTER YOUR SECRET KEY"
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dziennik_baza_user:MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc@dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com/dziennik_baza'
+    with open("C:\\Users\\Gabi\\PycharmProjects\\Inżynieria_oprogramowania\\Inżynieria_oprogramowania\\flask_server\\website\\config.yml", "r") as config_file:
+        config = yaml.load(config_file, Loader=yaml.FullLoader)
+        app.config.update(config)
 
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
 
     # stworzenie blueprint - jeden do autoryzacji (logowanie, wylogowywanie i rejestracja) i jeden do obsługi reszty funkcjonalności

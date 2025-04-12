@@ -2,6 +2,7 @@
 
 import psycopg2
 from .models import *
+from flask import current_app
 
 def get_plan():
     monday = []
@@ -23,11 +24,11 @@ def get_plan():
 
 
 def readLessons(user_id_l, user_type):
-    con = psycopg2.connect(database="dziennik_baza",
-                           user="dziennik_baza_user",
-                           password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc",
-                           host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com",
-                           port="5432")
+    con = psycopg2.connect(database=current_app.config["DATABASE_NAME"],
+                           user=current_app.config["DATABASE_USER"],
+                           password=current_app.config["DATABASE_PASSWORD"],
+                           host=current_app.config["DATABASE_HOST"],
+                           port=current_app.config["DATABASE_PORT"])
     cur = con.cursor()
     if user_type == 'student' or user_type == 'admin':
         cur.execute(
@@ -111,11 +112,11 @@ def read_lessons(teacher_id):
 # funkcja, która pobiera nazwę i profil każdej klasy w bazie danych
 def readClasses():
     # połączenie z bazą danych
-    con = psycopg2.connect(database="dziennik_baza",
-                           user="dziennik_baza_user",
-                           password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc",
-                           host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com",
-                           port="5432")
+    con = psycopg2.connect(database=current_app.config["DATABASE_NAME"],
+                           user=current_app.config["DATABASE_USER"],
+                           password=current_app.config["DATABASE_PASSWORD"],
+                           host=current_app.config["DATABASE_HOST"],
+                           port=current_app.config["DATABASE_PORT"])
     # stworzenie kursora
     cur = con.cursor()
     # wykonanie zapytania w bazie za pomocą kursora
@@ -150,11 +151,11 @@ def search(searched):
     # deklaracja listy z wynikami wyszukiwania
     users = []
     # połączenie z bazą danych
-    con = psycopg2.connect(database="dziennik_baza",
-                           user="dziennik_baza_user",
-                           password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc",
-                           host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com",
-                           port="5432")
+    con = psycopg2.connect(database=current_app.config["DATABASE_NAME"],
+                           user=current_app.config["DATABASE_USER"],
+                           password=current_app.config["DATABASE_PASSWORD"],
+                           host=current_app.config["DATABASE_HOST"],
+                           port=current_app.config["DATABASE_PORT"])
     # stworzenie kursora
     cur = con.cursor()
     # wykonanie zapytania w bazie za pomocą kursora - wyszukiwanie uczniów
