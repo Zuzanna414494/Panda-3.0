@@ -6,6 +6,7 @@ from .LuckyNumberGenerator import generateLuckyNumber
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from sqlalchemy import and_
+from pathlib import Path
 
 db = SQLAlchemy()
 
@@ -14,7 +15,9 @@ def create_app():
     # stworzenie instancji Flask
     app = Flask(__name__)
 
-    with open("C:\\Users\\Gabi\\PycharmProjects\\Inżynieria_oprogramowania\\Inżynieria_oprogramowania\\flask_server\\website\\config.yml", "r") as config_file:
+    base_dir = Path(__file__).parent
+    config_path = base_dir / "config.yml"
+    with open(config_path, "r") as config_file:
         config = yaml.load(config_file, Loader=yaml.FullLoader)
         app.config.update(config)
 

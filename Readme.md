@@ -17,14 +17,9 @@ Projekt został stworzony z użyciem:
 
 ## Instalacja i Uruchomienie
 1. Sklonuj repozytorium
-2. Zmień ścieżki w pliku konfiguracyjnym pyvenv.cfg
-3. Przejdź do folderu projektu i uruchom
-    ```bash pip 
+2. Przejdź do folderu projektu i uruchom
+    ``` 
     python -m pip install -r requirements.txt
-4. Połącz się z bazą danych (PostreSQL)
-   ```bash pip 
-   database="dziennik_baza"
-   user="dziennik_baza_user"
-   password="MNCZoIpG5hmgoEOHbGfvd15c5Br7KZfc"
-   host="dpg-cldiadbmot1c73dot240-a.frankfurt-postgres.render.com"
-   port="5432"
+   ```
+3. Stwórz dockerowy obraz bazy danych za pomocą pliku docker-compose.yml
+4. Uruchom aplikację za pomocą pliku main
