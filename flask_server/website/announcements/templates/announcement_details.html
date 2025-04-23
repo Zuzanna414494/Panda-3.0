@@ -11,7 +11,7 @@
         <p>Date: {{ announcement.add_date }}</p>
         <p>Teacher: {{ announcement.teacher_name() }}</p>
         {% if user.user_type == 'admin' or user.user_id == announcement.teacher_id %}
-            <a href="{{ url_for('views.edit_announcement', announcement_id=announcement.announcement_id) }}">
+            <a href="{{ url_for('announcements.editAnnouncement', announcement_id=announcement.announcement_id) }}">
             <button class="btn btn-primary edit-button">
                 Edit
             </button>

@@ -1,14 +1,14 @@
 import yaml
 from flask import Flask
 from flask_login import LoginManager
-from flask_sqlalchemy import SQLAlchemy
-from .LuckyNumberGenerator import generateLuckyNumber
+# from flask_sqlalchemy import SQLAlchemy
+from flask_server.website.profile.service import generateLuckyNumber
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 from pathlib import Path
-
-db = SQLAlchemy()
+from .extensions import db
+# db = SQLAlchemy()
 
 
 def create_app():
@@ -24,22 +24,29 @@ def create_app():
     db.init_app(app)
 
     # stworzenie blueprint - jeden do autoryzacji (logowanie, wylogowywanie i rejestracja) i jeden do obsługi reszty funkcjonalności
-    from .views import views
-    from .auth import auth
+    from .authorization.route import authorization
+    from .grades.route import grades
+    from .timetable.route import timetable
+    from .announcements.route import announcements
+    from .profile.route import profile
 
-    app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(authorization)
+    app.register_blueprint(grades)
+    app.register_blueprint(timetable)
+    app.register_blueprint(announcements)
+    app.register_blueprint(profile)
 
-    from .models import Users, Students, Teachers, Parents, Announcements
+    from .models import Announcements
 
     # deklaracja LoginManager do obsługi logowania i zapamiętywania zalogowanych użytkowników, sesji
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'authorization.login'
     login_manager.init_app(app)
 
     # funkcja potrzebna dla LoginManagera do zapamiętania użytkownika
     @login_manager.user_loader
     def loader_user(user_id):
+        from .models import Users
         return Users.query.get(int(user_id))
 
     # funkcja odpowiedzialna za to, żeby po wylogowaniu nie dało się wrócić do widoku strony zalogowanego użytkownika

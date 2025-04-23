@@ -1,6 +1,6 @@
 # plik z modelami z bazy danych - po wyszukaniu danego modelu mamy dostęp do wszystkich informacji o nim (atrybutów)
 
-from . import db
+from .extensions import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
 

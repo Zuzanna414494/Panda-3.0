@@ -1,5 +1,5 @@
 import datetime
-from flask_server.website.LuckyNumberGenerator import generateLuckyNumber  # zaimportuj funkcję z odpowiedniego modułu
+from flask_server.website.profile.service import generateLuckyNumber  # zaimportuj funkcję z odpowiedniego modułu
 
 def test_generate_lucky_number_range():
     # Test sprawdzający, czy liczba szczęśliwa jest w zakresie 1-20

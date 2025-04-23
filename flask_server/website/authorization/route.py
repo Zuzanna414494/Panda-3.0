@@ -1,18 +1,22 @@
 from flask import *
-from flask_login import login_user, logout_user, login_required
-from .models import *
+from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import current_user
+from flask_server.website.extensions import db
 
+authorization = Blueprint('authorization',
+                          __name__,
+                          static_folder='../static',
+                          template_folder='templates',
+                          url_prefix='/authorization')
 
-auth = Blueprint('auth', __name__)
 
 
 # endpoint służący do rejestrowania nowych użytkowników
-@auth.route('/sign-up', methods=["GET", "POST"])
+@authorization.route('/sign-up', methods=["GET", "POST"])
 # żeby dostać się na stronę, trzeba być zalogowanym użytkownikiem
 @login_required
 def sign_up():
+    from flask_server.website.models import Users, Students, Teachers, Parents
 
     # do sprawdzania, czy był błąd podczas rejestracji
     error = False
@@ -30,7 +34,7 @@ def sign_up():
             # jeśli nie, to komunikat i przekierowanie na stronę do rejestracji
             flash('Error!', category='error')
             error = True
-            return redirect(url_for('auth.sign_up'))
+            return redirect(url_for('authorization.sign_up'))
 
         else:
             # stworzenie modelu nowego użytkownika i dodanie go do bazy danych
@@ -60,7 +64,7 @@ def sign_up():
                 if not (name and surname and gradebook_nr and class_name and date_of_birth and place_of_birth and address):
                     flash('Empty place!', category='error')
                     error = True
-                    return redirect(url_for('auth.sign_up'))
+                    return redirect(url_for('authorization.sign_up'))
 
                 else:
                     new_student = Students(student_id=user_id,
@@ -84,7 +88,7 @@ def sign_up():
                 if not (name and surname and student_id):
                     flash('Empty place!', category='error')
                     error = True
-                    return redirect(url_for('auth.sign_up'))
+                    return redirect(url_for('authorization.sign_up'))
 
                 else:
                     new_parent = Parents(parent_id=user_id,
@@ -105,7 +109,7 @@ def sign_up():
                 if not (name and surname and classroom_nr and description):
                     flash('Empty place!', category='error')
                     error = True
-                    return redirect(url_for('auth.sign_up'))
+                    return redirect(url_for('authorization.sign_up'))
 
                 else:
                     new_teacher = Teachers(teacher_id=user_id,
@@ -121,15 +125,16 @@ def sign_up():
                 flash('Account created!', category='success')
 
             # powrót na stronę profilową aktualnego użytkownika
-            return redirect(url_for('views.profile'))
+            return redirect(url_for('profile.getProfile'))
 
     # uruchomienie strony do rejestracji
     return render_template("sign_up.html", user=current_user)
 
 
 # endpoint służący do logowania do aplikacji
-@auth.route("/login", methods=["GET", "POST"])
+@authorization.route("/login", methods=["GET", "POST"])
 def login():
+    from flask_server.website.models import Users
     if request.method == "POST":
 
         # wyszukiwanie użytkownika o danym loginie
@@ -139,7 +144,7 @@ def login():
         # jeśli nie znalezniono takiego użytkownika w bazie, pokazuje się alert o błędzie
         if not user:
             flash('User not found!', category='error')
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("authorization.login"))
 
         # jeśli użytkownik o danym loginie istnieje i wpisane hasło jest poprawne (odhaszowywanie)
         elif check_password_hash(user.password, request.form.get("password")):
@@ -148,24 +153,24 @@ def login():
             # alert o poprawnym zalogowaniu
             flash('Logged in!', category='success')
             # przekierowanie na stronę profilową użytkownika
-            return redirect(url_for("views.profile"))
+            return redirect(url_for("profile.getProfile"))
 
         # jeśli wpisane hasło dla istniejącego użytkownika jest niepoprawne
         else:
             # alert o błędzie
             flash('Incorrect password!', category='error')
             # powrót na stronę logowania
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("authorization.login"))
 
     # uruchomienie strony do logowania
     return render_template("login.html")
 
 
 # endpoint służący do wylogowywania
-@auth.route("/logout")
+@authorization.route("/logout")
 @login_required
 def logout():
     # wylogowanie użytkownika
     logout_user()
     # przekierowanie na stronę do logowania
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("authorization.login"))

@@ -150,14 +150,14 @@
 {#  możliwość dodania ogłoszeń (dla nauczyciela) #}
           {% if user.user_type == 'teacher' %}
             <ul class="nav nav-pills">
-                <li class="nav-item"><a href="http://127.0.0.1:5000/add-announcement" class="nav-link">Add an announcement</a></li>
+                <li class="nav-item"><a href="/announcements/add" class="nav-link">Add an announcement</a></li>
             </ul>
             {% endif %}
 
 {#  możliwość dodania nowego użytkownika (dla admina)   #}
         {% if user.user_type == 'admin' %}
             <ul class="nav nav-pills">
-                <li class="nav-item"><a href="http://127.0.0.1:5000/sign-up" class="nav-link">Create an account</a></li>
+                <li class="nav-item"><a href="/authorization/sign-up" class="nav-link">Create an account</a></li>
             </ul>
         {% endif %}
 
@@ -186,7 +186,7 @@
         {% for user in users %}
 
             <div class="search-details">
-            <a href="{{ url_for('views.searched_profile', user_id=user.user_id) }}">
+            <a href="{{ url_for('profile.searched_profile', user_id=user.user_id) }}">
                 <h4>{{ user.name }} {{ user.surname }}</h4>
             </a>
             Id: {{ user.user_id }} &nbsp;&nbsp;

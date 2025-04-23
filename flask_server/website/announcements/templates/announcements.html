@@ -20,7 +20,7 @@
         <hr>
         <br>
         <div class="announcement-details">
-            <a href="{{ url_for('views.announcement_details', announcement_id=announcement.announcement_id) }}">
+            <a href="{{ url_for('announcements.getAnnouncementDetails', announcement_id=announcement.announcement_id) }}">
                 <h4>{{ announcement.title() }}</h4>
             </a>
             Date: {{ announcement.add_date }} &nbsp;&nbsp;

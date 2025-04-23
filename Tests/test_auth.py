@@ -2,9 +2,9 @@
 import pytest
 
 from flask_server.website import create_app, db
-from flask_server.website.models import Users, Students
-from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date
+from flask_server.website.models import Users
+from werkzeug.security import generate_password_hash
+
 
 @pytest.fixture(scope='module')
 def test_client():

@@ -19,7 +19,7 @@
             Choose class</button>
           <ul class="dropdown-menu">
               {% for class in classes %}
-                      <li><a class="dropdown-item" href="{{ url_for('views.grades_teacher', class_name=class.class_name) }}">{{ class.class_name }}</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('grades.grades_teacher', class_name=class.class_name) }}">{{ class.class_name }}</a></li>
               {% endfor %}
           </ul>
       </div>
