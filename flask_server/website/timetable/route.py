@@ -1,6 +1,6 @@
 from flask import *
 from flask_login import login_required, current_user
-from flask_server.website.models import Students
+from flask_server.website.authorization.model import Students
 from flask_server.website.profile.service import getTeacher, getTeachers
 from flask_server.website.timetable.service import getTeacherLessons, getLessons
 from flask_server.website.classes.service import getClasses

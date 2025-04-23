@@ -1,6 +1,7 @@
 import pytest
 from flask_server.website import create_app, db
-from flask_server.website.models import Users, Announcements
+from flask_server.website.announcements.model import Announcements
+from flask_server.website.authorization.model import Users
 from werkzeug.security import generate_password_hash
 from datetime import datetime
 

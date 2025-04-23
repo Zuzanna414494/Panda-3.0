@@ -7,8 +7,12 @@ authorization = Blueprint('authorization',
                           __name__,
                           static_folder='../static',
                           template_folder='templates',
-                          url_prefix='/authorization')
+                          url_prefix='/')
 
+
+@authorization.route("/")
+def home_redirect():
+    return redirect(url_for("authorization.login"))
 
 
 # endpoint służący do rejestrowania nowych użytkowników
@@ -16,7 +20,7 @@ authorization = Blueprint('authorization',
 # żeby dostać się na stronę, trzeba być zalogowanym użytkownikiem
 @login_required
 def sign_up():
-    from flask_server.website.models import Users, Students, Teachers, Parents
+    from flask_server.website.authorization.model import Users, Students, Teachers, Parents
 
     # do sprawdzania, czy był błąd podczas rejestracji
     error = False
@@ -134,7 +138,7 @@ def sign_up():
 # endpoint służący do logowania do aplikacji
 @authorization.route("/login", methods=["GET", "POST"])
 def login():
-    from flask_server.website.models import Users
+    from flask_server.website.authorization.model import Users
     if request.method == "POST":
 
         # wyszukiwanie użytkownika o danym loginie

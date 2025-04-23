@@ -1,6 +1,6 @@
 import psycopg2
 from flask import current_app
-from flask_server.website.models import Teachers
+from flask_server.website.authorization.model import Teachers
 import random
 import datetime
 

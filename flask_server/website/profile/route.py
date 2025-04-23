@@ -1,6 +1,6 @@
 from flask import *
 from flask_login import login_required, current_user
-from flask_server.website.models import Users
+from flask_server.website.authorization.model import Users
 from .service import search
 
 profile = Blueprint('profile',

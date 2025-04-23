@@ -1,6 +1,7 @@
 import psycopg2
 from flask import current_app
-from flask_server.website.models import Teachers, Lessons
+from flask_server.website.timetable.model import Lessons
+from flask_server.website.authorization.model import Teachers
 
 
 def getLessons(user_id_l, user_type):

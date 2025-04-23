@@ -2,7 +2,7 @@ from flask import *
 from datetime import datetime
 from flask_login import login_required, current_user
 from flask_server.website.extensions import db
-from flask_server.website.models import Announcements
+from flask_server.website.announcements.model import Announcements
 
 announcements = Blueprint('announcements',
                           __name__,

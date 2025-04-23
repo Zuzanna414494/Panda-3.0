@@ -1,6 +1,6 @@
 import pytest
 from flask_server.website import create_app, db
-from flask_server.website.models import Users
+from flask_server.website.authorization.model import Users
 from werkzeug.security import generate_password_hash
 
 @pytest.fixture(scope='module')

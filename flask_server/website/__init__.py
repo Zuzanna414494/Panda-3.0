@@ -1,14 +1,12 @@
 import yaml
 from flask import Flask
 from flask_login import LoginManager
-# from flask_sqlalchemy import SQLAlchemy
 from flask_server.website.profile.service import generateLuckyNumber
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timedelta
 from sqlalchemy import and_
 from pathlib import Path
-from .extensions import db
-# db = SQLAlchemy()
+from flask_server.website.extensions import db
 
 
 def create_app():
@@ -36,7 +34,6 @@ def create_app():
     app.register_blueprint(announcements)
     app.register_blueprint(profile)
 
-    from .models import Announcements
 
     # deklaracja LoginManager do obsługi logowania i zapamiętywania zalogowanych użytkowników, sesji
     login_manager = LoginManager()
@@ -46,7 +43,7 @@ def create_app():
     # funkcja potrzebna dla LoginManagera do zapamiętania użytkownika
     @login_manager.user_loader
     def loader_user(user_id):
-        from .models import Users
+        from .authorization.model import Users
         return Users.query.get(int(user_id))
 
     # funkcja odpowiedzialna za to, żeby po wylogowaniu nie dało się wrócić do widoku strony zalogowanego użytkownika
@@ -61,6 +58,7 @@ def create_app():
         return dict(lucky_number=number)
 
     def archive_old_announcements():
+        from flask_server.website.announcements.model import Announcements
         with app.app_context():
             month_ago = datetime.now() - timedelta(days=30)
             old_announcements = Announcements.query.filter(

@@ -3,7 +3,10 @@ from flask import *
 from flask_login import login_required, current_user
 from flask_server.website.extensions import db
 from flask_server.website.classes.service import getClasses
-from flask_server.website.models import Students, Subjects, Classes, Grades
+from flask_server.website.classes.model import Classes
+from flask_server.website.timetable.model import Subjects
+from flask_server.website.grades.model import Grades
+from flask_server.website.authorization.model import Students
 
 grades = Blueprint('grades',
                           __name__,
