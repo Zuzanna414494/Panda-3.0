@@ -1,10 +1,12 @@
 import pytest
 from flask_server.website import create_app, db
-from flask_server.website.authorization.model import Students, Subjects, Teachers
+from flask_server.website.authorization.model import Students, Teachers
+from flask_server.website.timetable.model import Subjects
 from flask_server.website.grades.model import Grades
 from flask_server.website.authorization.model import Users
 from werkzeug.security import generate_password_hash
 from datetime import datetime
+
 
 @pytest.fixture(scope='module')
 def test_client():
@@ -17,13 +19,16 @@ def test_client():
         db.session.remove()
         db.drop_all()
 
+
 @pytest.fixture(scope='module')
 def init_database():
-    teacher_user = Users(login='teacher_user', password=generate_password_hash('password'), user_type='teacher', email='teacher@example.com', phone_nr=123456789, photo = "abc", logged_in = False)
+    teacher_user = Users(login='teacher_user', password=generate_password_hash('password'), user_type='teacher',
+                         email='teacher@example.com', phone_nr=123456789, photo="abc", logged_in=False)
     db.session.add(teacher_user)
     db.session.commit()
 
-    teacher = Teachers(teacher_id=teacher_user.user_id, name='John', surname='Doe', classroom_nr=101, description='Math Teacher')
+    teacher = Teachers(teacher_id=teacher_user.user_id, name='John', surname='Doe', classroom_nr=101,
+                       description='Math Teacher')
     db.session.add(teacher)
     db.session.commit()
 
@@ -31,26 +36,28 @@ def init_database():
     db.session.add(subject)
     db.session.commit()
 
-    student_user = Users(login='student_user', password=generate_password_hash('password'), user_type='student', email='student@example.com', phone_nr=123456789, photo = "abc", logged_in = False)
+    student_user = Users(login='student_user', password=generate_password_hash('password'), user_type='student',
+                         email='student@example.com', phone_nr=123456789, photo="abc", logged_in=False)
     db.session.add(student_user)
     db.session.commit()
 
-    student = Students(student_id=student_user.user_id, name='Jane', surname='Doe', gradebook_nr=123, class_name='3A', date_of_birth=datetime.now(), place_of_birth='City', address='Street 1')
+    student = Students(student_id=student_user.user_id, name='Jane', surname='Doe', gradebook_nr=123, class_name='3A',
+                       date_of_birth=datetime.now(), place_of_birth='City', address='Street 1')
     db.session.add(student)
     db.session.commit()
-
-
 
     yield db
 
     db.session.remove()
     db.drop_all()
 
+
 def test_add_grade(test_client, init_database):
     subject = Subjects.query.first()
     student = Students.query.first()
 
-    new_grade = Grades(subject_id=subject.subject_id, type=3, weight=1, student_id=student.student_id, description='Test Grade', is_final=False)
+    new_grade = Grades(subject_id=subject.subject_id, type=3, weight=1, student_id=student.student_id,
+                       description='Test Grade', is_final=False)
     db.session.add(new_grade)
     db.session.commit()
 
@@ -58,6 +65,7 @@ def test_add_grade(test_client, init_database):
     assert added_grade is not None
     assert added_grade.subject_id == subject.subject_id
     assert added_grade.student_id == student.student_id
+
 
 def test_delete_grade(test_client, init_database):
     new_grade = Grades(subject_id=1, type=1, weight=1, student_id=1, description="Test Grade2", is_final=False)
@@ -72,6 +80,7 @@ def test_delete_grade(test_client, init_database):
 
     deleted_grade = Grades.query.filter_by(description="Test Grade2").first()
     assert deleted_grade is None
+
 
 '''
 def login_user(test_client, username, password):

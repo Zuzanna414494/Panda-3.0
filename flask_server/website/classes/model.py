@@ -1,6 +1,7 @@
 from flask_server.website.extensions import db
 from flask_login import UserMixin
 
+
 # model klas (odpowiednik tabeli classes)
 class Classes(db.Model, UserMixin):
     class_name = db.Column(db.String(10), primary_key=True)

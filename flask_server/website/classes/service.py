@@ -1,6 +1,7 @@
 import psycopg2
 from flask import current_app
 
+
 # funkcja, która pobiera nazwę i profil każdej klasy w bazie danych
 def getClasses():
     # połączenie z bazą danych

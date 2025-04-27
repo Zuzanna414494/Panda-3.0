@@ -9,15 +9,20 @@ from pathlib import Path
 from flask_server.website.extensions import db
 
 
-def create_app():
+def create_app(config_name=None):
     # stworzenie instancji Flask
     app = Flask(__name__)
 
     base_dir = Path(__file__).parent
-    config_path = base_dir / "config.yml"
-    with open(config_path, "r") as config_file:
-        config = yaml.load(config_file, Loader=yaml.FullLoader)
-        app.config.update(config)
+    if config_name == 'testing':
+        app.config["SECRET_KEY"] = "TEST_SECRET_KEY"
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+        app.config['TESTING'] = True
+    else:
+        config_path = base_dir / "config.yml"
+        with open(config_path, "r") as config_file:
+            config = yaml.load(config_file, Loader=yaml.FullLoader)
+            app.config.update(config)
 
     db.init_app(app)
 

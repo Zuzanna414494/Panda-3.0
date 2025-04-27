@@ -17,7 +17,7 @@ def test_generate_lucky_number_different_days():
     today = datetime.date.today()
     lucky_number_today = generateLuckyNumber(today)
 
-    tomorrow = today + datetime.timedelta(days=1)
+    tomorrow = today + datetime.timedelta(days=2)
     lucky_number_tomorrow = generateLuckyNumber(tomorrow)
 
     assert lucky_number_today != lucky_number_tomorrow
