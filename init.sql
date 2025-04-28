@@ -154,7 +154,9 @@ alter table messages
 INSERT INTO users (login, password, user_type, email, phone_nr, photo, logged_in) VALUES
 ('student1', 'scrypt:32768:8:1$yzF6rN6sjF2a9FFu$fcdbe0d9c54cbb00f486e5f8eabb9cabbf554bd1946aa8b9941d69d2987459bfae03c8cc7119b63a195b3ba6f6e6cd534698d3efd2c68b6c615503a650084ec1', 'student', 'student1@szkola.pl', 123456789, NULL, false),
 ('teacher1', 'scrypt:32768:8:1$yzF6rN6sjF2a9FFu$fcdbe0d9c54cbb00f486e5f8eabb9cabbf554bd1946aa8b9941d69d2987459bfae03c8cc7119b63a195b3ba6f6e6cd534698d3efd2c68b6c615503a650084ec1', 'teacher', 'teacher1@szkola.pl', 987654321, NULL, false),
-('parent1', 'scrypt:32768:8:1$yzF6rN6sjF2a9FFu$fcdbe0d9c54cbb00f486e5f8eabb9cabbf554bd1946aa8b9941d69d2987459bfae03c8cc7119b63a195b3ba6f6e6cd534698d3efd2c68b6c615503a650084ec1', 'parent', 'parent1@szkola.pl', 456123789, NULL, false);
+('parent1', 'scrypt:32768:8:1$yzF6rN6sjF2a9FFu$fcdbe0d9c54cbb00f486e5f8eabb9cabbf554bd1946aa8b9941d69d2987459bfae03c8cc7119b63a195b3ba6f6e6cd534698d3efd2c68b6c615503a650084ec1', 'parent', 'parent1@szkola.pl', 456123789, NULL, false),
+('admin', 'scrypt:32768:8:1$yzF6rN6sjF2a9FFu$fcdbe0d9c54cbb00f486e5f8eabb9cabbf554bd1946aa8b9941d69d2987459bfae03c8cc7119b63a195b3ba6f6e6cd534698d3efd2c68b6c615503a650084ec1', 'admin', 'admin@szkola.pl', 999999999, NULL, false);
+
 
 -- STUDENTS
 INSERT INTO students (student_id, name, surname, gradebook_nr, class_name, date_of_birth, place_of_birth, address) VALUES

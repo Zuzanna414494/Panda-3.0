@@ -11,7 +11,7 @@
     {% for msg in received_messages %}
         <div class="card mb-3">
             <div class="card-header">
-                From: {{ msg.sender_name() }} | To: {{ msg.receiver_name() }} | Subject: {{ msg.subject }} | Date: {{ msg.send_date.strftime("%d-%m-%Y %H:%M") }}
+                From: {{ msg.sender_email() }} | To: {{ msg.receiver_email() }} | Subject: {{ msg.subject }} | Date: {{ msg.send_date.strftime("%d-%m-%Y %H:%M") }}
             </div>
             <div class="card-body">
                 <p>{{ msg.body }}</p>
@@ -23,7 +23,7 @@
     {% for msg in sent_messages %}
         <div class="card mb-3">
             <div class="card-header">
-                From: {{ msg.sender_name() }} | To: {{ msg.receiver_name() }} | Subject: {{ msg.subject }} | Date: {{ msg.send_date.strftime("%d-%m-%Y %H:%M") }}
+                From: {{ msg.sender_email() }} | To: {{ msg.receiver_email() }} | Subject: {{ msg.subject }} | Date: {{ msg.send_date.strftime("%d-%m-%Y %H:%M") }}
             </div>
             <div class="card-body">
                 <p>{{ msg.body }}</p>

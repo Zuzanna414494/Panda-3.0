@@ -14,15 +14,16 @@
             <h5 class="card-title">{{ message.subject }}</h5>
             <p class="card-text">{{ message.body }}</p>
             <p class="card-text">
-              <small class="text-muted">
-                From: {{ message.sender_name() }} | To: {{ message.receiver_name() }} | Sent: {{ message.send_date.strftime("%d-%m-%Y %H:%M") }}
-              </small>
+              <small class="text-muted d-block"><strong>From:</strong> {{ message.sender_email() }}</small>
+              <small class="text-muted d-block"><strong>To:</strong> {{ message.receiver_email() }}</small>
+              <small class="text-muted d-block"><strong>Sent:</strong> {{ message.send_date.strftime("%d-%m-%Y %H:%M") }}</small>
             </p>
 
             <form action="{{ url_for('messages.deleteMessage', message_id=message.message_id) }}" method="post" class="d-inline">
               <button class="btn btn-danger btn-sm" type="submit">Delete</button>
             </form>
             <a href="{{ url_for('messages.forwardMessage', message_id=message.message_id) }}" class="btn btn-secondary btn-sm ms-2">Forward</a>
+            <a href="{{ url_for('messages.replyMessage', message_id=message.message_id) }}" class="btn btn-success btn-sm ms-2">Reply</a>
 
           </div>
         </div>
@@ -39,9 +40,9 @@
             <h5 class="card-title">{{ message.subject }}</h5>
             <p class="card-text">{{ message.body }}</p>
             <p class="card-text">
-              <small class="text-muted">
-                From: {{ message.sender_name() }} | To: {{ message.receiver_name() }} | Sent: {{ message.send_date.strftime("%d-%m-%Y %H:%M") }}
-              </small>
+              <small class="text-muted d-block"><strong>From:</strong> {{ message.sender_email() }}</small>
+              <small class="text-muted d-block"><strong>To:</strong> {{ message.receiver_email() }}</small>
+              <small class="text-muted d-block"><strong>Sent:</strong> {{ message.send_date.strftime("%d-%m-%Y %H:%M") }}</small>
             </p>
           </div>
         </div>

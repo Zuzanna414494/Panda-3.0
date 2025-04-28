@@ -78,7 +78,6 @@ def sendMessage():
     classes = Students.query.with_entities(Students.class_name).distinct().all()
     return render_template("send_message.html", user=current_user, classes=classes)
 
-# FORWARD MESSAGE
 @messages.route('/forward/<int:message_id>', methods=["GET", "POST"])
 @login_required
 def forwardMessage(message_id):
@@ -107,3 +106,29 @@ def forwardMessage(message_id):
             flash('Please provide receiver email.', category='error')
 
     return render_template('forward_message.html', user=current_user, original_message=original_message)
+
+# NEW: REPLY MESSAGE
+@messages.route('/reply/<int:message_id>', methods=["GET", "POST"])
+@login_required
+def replyMessage(message_id):
+    original_message = Messages.query.get_or_404(message_id)
+
+    if request.method == "POST":
+        subject = request.form.get("subject")
+        body = request.form.get("body")
+
+        new_message = Messages(
+            sender_id=current_user.user_id,
+            receiver_id=original_message.sender_id,
+            subject=subject,
+            body=body
+        )
+        db.session.add(new_message)
+        db.session.commit()
+        flash('Reply sent!', category='success')
+        return redirect(url_for('messages.getMessages'))
+
+    reply_subject = f"RE: {original_message.subject}"
+    quoted_body = f"\n\n--- Original message ---\n{original_message.body}"
+
+    return render_template('reply_message.html', user=current_user, original_message=original_message, reply_subject=reply_subject, quoted_body=quoted_body)

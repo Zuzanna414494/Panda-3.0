@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Reply Message{% endblock %}
+{% block content %}
+<main>
+  <div class="container">
+    <h1>Reply to Message</h1>
+    <form method="POST">
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="receiver" name="receiver" value="{{ original_message.sender_email() }}" readonly>
+            <label for="receiver">Receiver</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="subject" name="subject" value="{{ reply_subject }}" required>
+            <label for="subject">Subject</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <textarea class="form-control" id="body" name="body" style="height: 300px;" required>{{ quoted_body }}</textarea>
+            <label for="body">Message</label>
+        </div>
+
+        <button class="btn btn-primary w-100" type="submit">Send Reply</button>
+
+    </form>
+  </div>
+</main>
+{% endblock %}
