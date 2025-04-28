@@ -32,12 +32,14 @@ def create_app(config_name=None):
     from .timetable.route import timetable
     from .announcements.route import announcements
     from .profile.route import profile
+    from .messages.route import messages
 
     app.register_blueprint(authorization)
     app.register_blueprint(grades)
     app.register_blueprint(timetable)
     app.register_blueprint(announcements)
     app.register_blueprint(profile)
+    app.register_blueprint(messages)
 
 
     # deklaracja LoginManager do obsługi logowania i zapamiętywania zalogowanych użytkowników, sesji

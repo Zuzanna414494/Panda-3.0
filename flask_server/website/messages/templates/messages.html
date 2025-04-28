@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Messages{% endblock %}
+{% set active_page = "messages" %}
+{% block content %}
+<main>
+  <div class="container">
+    <a href="{{ url_for('messages.sendMessage') }}" class="btn btn-primary mt-4 mb-4">Send New Message</a>
+
+    <h1 class="mb-4">Received Messages</h1>
+    {% if received_messages %}
+      {% for message in received_messages %}
+        <div class="card my-3">
+          <div class="card-body">
+            <h5 class="card-title">{{ message.subject }}</h5>
+            <p class="card-text">{{ message.body }}</p>
+            <p class="card-text">
+              <small class="text-muted">
+                From: {{ message.sender_name() }} | To: {{ message.receiver_name() }} | Sent: {{ message.send_date.strftime("%d-%m-%Y %H:%M") }}
+              </small>
+            </p>
+
+            <form action="{{ url_for('messages.deleteMessage', message_id=message.message_id) }}" method="post" class="d-inline">
+              <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+            </form>
+            <a href="{{ url_for('messages.forwardMessage', message_id=message.message_id) }}" class="btn btn-secondary btn-sm ms-2">Forward</a>
+
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No received messages.</p>
+    {% endif %}
+
+    <h1 class="mt-5 mb-4">Sent Messages</h1>
+    {% if sent_messages %}
+      {% for message in sent_messages %}
+        <div class="card my-3">
+          <div class="card-body">
+            <h5 class="card-title">{{ message.subject }}</h5>
+            <p class="card-text">{{ message.body }}</p>
+            <p class="card-text">
+              <small class="text-muted">
+                From: {{ message.sender_name() }} | To: {{ message.receiver_name() }} | Sent: {{ message.send_date.strftime("%d-%m-%Y %H:%M") }}
+              </small>
+            </p>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No sent messages.</p>
+    {% endif %}
+  </div>
+</main>
+{% endblock %}

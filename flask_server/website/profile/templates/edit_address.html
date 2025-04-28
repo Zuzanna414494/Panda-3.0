@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Edit Address{% endblock %}
+
+{% block content %}
+<main>
+<div class="container">
+    <h1>Edit your address</h1>
+    <br>
+    <form action="#" method="post">
+        <div class="form-floating" id="form">
+            <textarea class="form-control" id="address" name="address" placeholder="Enter new address"
+                      style="height: 100px;"
+                      onkeydown="if(event.keyCode === 13) {event.preventDefault(); this.value += '\n';}"></textarea>
+        </div>
+        <button id='address_button' class="btn btn-primary w-100 py-2" type="button" onclick="editAddress()"
+                data-student-id="{{ student_id }}">Save
+        </button>
+    </form>
+</div>
+
+<script>
+document.getElementById('form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    editAddress();
+});
+function editAddress() {
+    const studentId = document.getElementById('address_button').getAttribute('data-student-id');
+    let address = document.getElementById('address').value;
+    fetch(`/profile/edit_address/${studentId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ address: address })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        window.location.href = "/profile";
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+</main>
+{% endblock %}

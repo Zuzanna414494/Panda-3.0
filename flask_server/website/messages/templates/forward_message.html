@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% set active_page = "messages" %}
+
+{% block title %}Forward Message{% endblock %}
+{% block content %}
+<main class="container">
+    <h1>Forward Message</h1>
+    <form method="POST">
+         <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="receiver_email" name="receiver_email" placeholder="Receiver Email" required>
+            <label for="receiver_email">Receiver Email</label>
+         </div>
+
+         <div class="form-floating mb-3">
+            <p><strong>Subject:</strong> {{ original_message.subject }}</p>
+            <p><strong>Body:</strong> {{ original_message.body }}</p>
+         </div>
+
+         <button type="submit" class="btn btn-primary">Forward</button>
+    </form>
+</main>
+{% endblock %}

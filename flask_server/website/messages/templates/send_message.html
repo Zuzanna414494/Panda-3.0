@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Send Message{% endblock %}
+{% block content %}
+<main>
+  <div class="container">
+    <h1>Send a New Message</h1>
+    <form action="#" method="post">
+
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="receiver_email" name="receiver_email" placeholder="Receiver Email">
+            <label for="receiver_email">Receiver Email</label>
+        </div>
+
+        <div class="mb-3">
+            <label for="class_name" class="form-label">Or select class</label>
+            <select class="form-select" name="class_name" id="class_name">
+                <option value="">--- Select class ---</option>
+                {% for c in classes %}
+                    <option value="{{ c.class_name }}">{{ c.class_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+            <label for="subject">Subject</label>
+        </div>
+
+        <div class="form-floating mb-3">
+            <textarea class="form-control" id="body" name="body" placeholder="Message" style="height: 200px;" required></textarea>
+            <label for="body">Message</label>
+        </div>
+
+        <button class="btn btn-primary w-100" type="submit">Send</button>
+
+    </form>
+  </div>
+</main>
+{% endblock %}

@@ -69,9 +69,16 @@
       </p>
         </div>
       <div class="d-flex text-body-secondary pt-3">
-      <p class="pb-3 mb-0 small lh-sm border-bottom">
-        <h6 class="border-bottom pb-2 mb-0">Address: &emsp;&emsp;{{ user.student[0].address }}</h6>
-      </p>
+      <p><strong>Address:</strong> <span id="address-display">{{ user.student[0].address }}</span>
+            <button class="btn btn-sm btn-outline-primary" onclick="showAddressEdit()">Edit</button>
+        </p>
+
+        <form id="address-form" action="{{ url_for('profile.edit_address') }}" method="POST" style="display:none;">
+            <input type="text" name="new_address" id="new_address" class="form-control" placeholder="Enter new address">
+            <br>
+            <button class="btn btn-success" type="submit">Save</button>
+            <button class="btn btn-secondary" type="button" onclick="hideAddressEdit()">Cancel</button>
+        </form>
         </div>
       {% endif %}
 
@@ -96,9 +103,16 @@
           </p>
             </div>
           <div class="d-flex text-body-secondary pt-3">
-          <p class="pb-3 mb-0 small lh-sm border-bottom">
-            <h6 class="border-bottom pb-2 mb-0">Phone: &emsp;&emsp;&emsp;{{ user.phone_nr }}</h6>
-          </p>
+              <p><strong>Phone number:</strong> <span id="phone-display">{{ user.phone_nr }}</span>
+                  <button class="btn btn-sm btn-outline-primary" onclick="showPhoneEdit()">Edit</button>
+              </p>
+
+              <form id="phone-form" action="{{ url_for('profile.edit_phone') }}" method="POST" style="display:none;">
+                  <input type="text" name="new_phone" id="new_phone" class="form-control" placeholder="Enter new phone number" maxlength="9">
+                  <br>
+                  <button class="btn btn-success" type="submit" onclick="return validatePhone()">Save</button>
+                  <button class="btn btn-secondary" type="button" onclick="hidePhoneEdit()">Cancel</button>
+              </form>
             </div>
 
 
@@ -199,5 +213,35 @@
     {% endif %}
 
 </div>
+<script>
+function showPhoneEdit() {
+    document.getElementById('phone-display').style.display = 'none';
+    document.getElementById('phone-form').style.display = 'block';
+}
+
+function hidePhoneEdit() {
+    document.getElementById('phone-display').style.display = 'inline';
+    document.getElementById('phone-form').style.display = 'none';
+}
+
+function showAddressEdit() {
+    document.getElementById('address-display').style.display = 'none';
+    document.getElementById('address-form').style.display = 'block';
+}
+
+function hideAddressEdit() {
+    document.getElementById('address-display').style.display = 'inline';
+    document.getElementById('address-form').style.display = 'none';
+}
+
+function validatePhone() {
+    var phone = document.getElementById('new_phone').value;
+    if (phone.length !== 9 || isNaN(phone)) {
+        alert('Phone number must have exactly 9 digits.');
+        return false;
+    }
+    return true;
+}
+</script>
 </main>
 {% endblock %}

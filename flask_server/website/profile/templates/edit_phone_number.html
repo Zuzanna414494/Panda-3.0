@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Edit Phone{% endblock %}
+
+{% block content %}
+<main>
+<div class="container">
+    <h1>Edit your phone number</h1>
+    <br>
+    <form action="#" method="post">
+        <div class="form-floating" id="form">
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="Enter new phone number">
+        </div>
+        <button id='phone_button' class="btn btn-primary w-100 py-2" type="button" onclick="editPhone()"
+                data-user-id="{{ user_id }}">Save
+        </button>
+    </form>
+</div>
+
+<script>
+document.getElementById('form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    editPhone();
+});
+function editPhone() {
+    const userId = document.getElementById('phone_button').getAttribute('data-user-id');
+    let phone = document.getElementById('phone').value;
+    fetch(`/profile/edit_phone/${userId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ phone_nr: phone })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        window.location.href = "/profile";
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+</main>
+{% endblock %}

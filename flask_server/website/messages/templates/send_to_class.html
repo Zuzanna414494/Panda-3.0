@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Send to Class{% endblock %}
+
+{% block content %}
+<main>
+<div class="container">
+    <h1>Send message to class</h1>
+    <form action="#" method="post">
+        <div class="form-floating">
+            <input type="text" class="form-control" id="class_name" name="class_name" placeholder="Class name" required>
+            <label for="class_name">Class name</label>
+        </div>
+        <div class="form-floating">
+            <input type="text" class="form-control" id="subject" name="subject" placeholder="Subject" required>
+            <label for="subject">Subject</label>
+        </div>
+        <div class="form-floating">
+            <textarea class="form-control" id="body" name="body" placeholder="Message body" required style="height: 200px;"></textarea>
+            <label for="body">Body</label>
+        </div>
+        <br>
+        <button class="btn btn-primary w-100" type="submit">Send</button>
+    </form>
+</div>
+</main>
+{% endblock %}

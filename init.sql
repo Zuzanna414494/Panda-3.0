@@ -132,6 +132,23 @@ create table lessons
 alter table lessons
     owner to panda;
 
+create table messages
+(
+    message_id serial
+        primary key,
+    sender_id integer not null
+        references users(user_id),
+    receiver_id integer not null
+        references users(user_id),
+    subject varchar(200) not null,
+    body varchar(5000) not null,
+    send_date timestamp with time zone default now(),
+    forwarded boolean default false
+);
+
+alter table messages
+    owner to panda;
+
 
 -- USERS
 INSERT INTO users (login, password, user_type, email, phone_nr, photo, logged_in) VALUES

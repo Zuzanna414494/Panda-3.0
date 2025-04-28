@@ -43,37 +43,39 @@ def searched_profile(user_id):
     return render_template("searched_profile.html", user=current_user, searched_user=searched_user)
 
 
-# # edycja adresu studenta
-# @profile.route('/edit_address/<int:student_id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_address(student_id):
-#     if request.method == 'POST':
-#         data = request.get_json()
-#         new_address = data.get('address')
-#         student = Students.query.get(student_id)
-#         if student:
-#             student.address = new_address
-#             db.session.commit()
-#             flash('Address updated successfully!', category='success')
-#             return redirect(url_for('profile.getProfile'))
-#         else:
-#             return {"error": "Student not found"}, 404
-#     return render_template('edit_address.html', student_id=student_id)
-#
-#
-# # edycja numeru telefonu
-# @profile.route('/edit_phone/<int:user_id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_phone(user_id):
-#     if request.method == 'POST':
-#         data = request.get_json()
-#         new_phone = data.get('phone_nr')
-#         user = Users.query.get(user_id)
-#         if user:
-#             user.phone_nr = new_phone
-#             db.session.commit()
-#             flash('Phone number updated successfully!', category='success')
-#             return redirect(url_for('profile.getProfile'))
-#         else:
-#             return {"error": "User not found"}, 404
-#     return render_template('edit_phone_number.html', user_id=user_id)
+# Edycja adresu zamieszkania studenta
+@profile.route('/edit_address', methods=['POST'])
+@login_required
+def edit_address():
+    new_address = request.form.get('new_address')
+    if not new_address:
+        flash('Address cannot be empty!', category='error')
+        return redirect(url_for('profile.getProfile'))
+
+    student = Students.query.filter_by(student_id=current_user.user_id).first()
+    if student:
+        student.address = new_address
+        db.session.commit()
+        flash('Address updated successfully!', category='success')
+    else:
+        flash('Student not found.', category='error')
+    return redirect(url_for('profile.getProfile'))
+
+
+# Edycja numeru telefonu użytkownika
+@profile.route('/edit_phone', methods=['POST'])
+@login_required
+def edit_phone():
+    new_phone = request.form.get('new_phone')
+    if not new_phone or not new_phone.isdigit() or len(new_phone) != 9:
+        flash('Phone number must have exactly 9 digits!', category='error')
+        return redirect(url_for('profile.getProfile'))
+
+    user = Users.query.get(current_user.user_id)
+    if user:
+        user.phone_nr = int(new_phone)
+        db.session.commit()
+        flash('Phone number updated successfully!', category='success')
+    else:
+        flash('User not found.', category='error')
+    return redirect(url_for('profile.getProfile'))
