@@ -12,7 +12,8 @@
  <div class="container">
     <h1>Create an announcement</h1>
     <br>
-    <form action="#" method="post">
+    <form action="{{ url_for('announcements.addAnnouncement') }}" method="post">
+
         <div class="form-floating">
             <textarea class="form-control" id="description" name="description" placeholder="Enter description"
                       style="height: 465px;"

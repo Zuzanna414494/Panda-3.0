@@ -1,25 +1,28 @@
 {% extends "base.html" %}
-
 {% block title %}Announcements{% endblock %}
-
 {% set active_page = "announcements" %}
 
 {% block content %}
-     <style>
-        a {
-            text-decoration: none;
-        }
-    </style>
+<style>
+    a {
+        text-decoration: none;
+    }
+</style>
+
 <main>
   <div class="container">
-
     <h1>Announcements</h1>
 
+    <!-- Przycisk + modal tylko dla nauczyciela i admina -->
+    {% if user.user_type in ['teacher', 'admin'] %}
+      <div class="text-end mb-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAnnouncementModal">Add announcement</button>
+      </div>
+    {% endif %}
+
     {% for announcement in filtered_announcements %}
-        <br>
         <hr>
-        <br>
-        <div class="announcement-details">
+        <div class="announcement-details mb-4">
             <a href="{{ url_for('announcements.getAnnouncementDetails', announcement_id=announcement.announcement_id) }}">
                 <h4>{{ announcement.title() }}</h4>
             </a>
@@ -27,7 +30,33 @@
             Teacher: {{ announcement.teacher_name() }}
         </div>
     {% endfor %}
-
   </div>
+
+  {% if user.user_type in ['teacher', 'admin'] %}
+  <!-- Modal do dodania ogłoszenia -->
+  <div class="modal fade" id="addAnnouncementModal" tabindex="-1" aria-labelledby="addAnnouncementLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 shadow">
+        <div class="modal-header border-bottom-0">
+          <h5 class="modal-title" id="addAnnouncementLabel">Add Announcement</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="{{ url_for('announcements.addAnnouncement') }}" method="post">
+          <div class="modal-body">
+            <div class="form-floating mb-3">
+              <textarea class="form-control" id="description" name="description" placeholder="Enter description"
+                        style="height: 200px;"></textarea>
+              <label for="description">Description</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-primary w-100 py-2" type="submit">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
 </main>
 {% endblock %}
