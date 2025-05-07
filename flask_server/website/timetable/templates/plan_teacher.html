@@ -1,5 +1,3 @@
-{#  strona do wyświetlania planu dla nauczyciela i admina   #}
-
 {% extends "base.html" %}
 {% block title %}Plan{% endblock %}
 {% set active_page = "plan" %}
@@ -7,77 +5,92 @@
 {% block content %}
 <main>
 <style>
-  /* Styl dla wszystkich wierszy */
   #allRows tr {
-    height: 64px; /* Ustawiona wysokość */
+    height: 64px;
   }
 </style>
 
-  <div class="container">
+<div class="container">
 
-{#  wybór klasy, której plan zajęć chce się zobaczyć     #}
   {% if user.user_type == 'teacher' or user.user_type == 'admin' %}
-    <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Choose class</button>
-          <ul class="dropdown-menu">
-              {% for class in classes %}
-                      <li><a class="dropdown-item" href="{{ url_for('timetable.plan_teacher', class_name=class['class_name'])}}">{{ class['class_name'] }}</a></li>
-              {% endfor %}
-          </ul>
-      </div>
-      <br>
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Choose class
+    </button>
+    <ul class="dropdown-menu">
+      {% for class in classes %}
+        <li><a class="dropdown-item" href="{{ url_for('timetable.plan_teacher', class_name=class['class_name']) }}">{{ class['class_name'] }}</a></li>
+      {% endfor %}
+    </ul>
+  </div>
+  <br>
   {% endif %}
 
-
-{#  wyświetlenie planu  #}
-    <h1>Plan of class: {{ class_name }}</h1>
+  <h1>Plan of class: {{ class_name }}</h1>
   <br>
 
+  <div class="table-responsive">
+    <table class="table table-sm table-striped table-bordered text-center">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Time</th>
+          <th>Monday</th>
+          <th>Tuesday</th>
+          <th>Wednesday</th>
+          <th>Thursday</th>
+          <th>Friday</th>
+        </tr>
+      </thead>
+      <tbody id="allRows">
+        {% set time_slots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'] %}
+        {% set end_time_slots = ['08:45', '09:45', '10:45', '11:45', '12:45', '13:45', '14:45', '15:45'] %}
+        {% for time_slot in time_slots %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ time_slot }} - {{ end_time_slots[loop.index - 1] }}</td>
+          {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
+          <td>
+            {% for lesson in zajecia %}
+              {% if lesson['day_of_week'] == day and lesson['start_time'] == time_slot %}
+                <strong>{{ lesson['subject'] }}</strong><br>
+                ({{ lesson['building'] }})<br>
+                {% if lesson['test'] != 'None' %}
+                  <span style="color: red;">{{ lesson['test'] }}</span><br>
+                {% endif %}
 
-    <div class="table-responsive">
-        <table class="table table-sm table-striped table-bordered text-center">
-            <thead>
-                <tr>
-                     <th style="width: 5%;"></th>
-                <th style="width: 16%; min-width: 100px;">Time</th>
-                <th style="width: 16%; min-width: 100px;">Monday</th>
-                <th style="width: 16%; min-width: 100px;">Tuesday</th>
-                <th style="width: 16%; min-width: 100px;">Wednesday</th>
-                <th style="width: 16%; min-width: 100px;">Thursday</th>
-                <th style="width: 16%; min-width: 100px;">Friday</th>
-                </tr>
-            </thead>
-              <tbody id="allRows">
-                {% set time_slots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00'] %}
-                {% set end_time_slots = ['08:45', '09:45', '10:45', '11:45', '12:45', '13:45', '14:45', '15:45'] %}
-                {% for time_slot in time_slots %}
-                    <tr>
-                       <td>{{ loop.index }}</td>
-                        <td>{{ time_slot }} - {{ end_time_slots[loop.index - 1] }}</td>
-                        {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] %}
-                            <td>
-                                {% for lesson in zajecia %}
-                                    {% if lesson['day_of_week'] == day and lesson['start_time'] == time_slot %}
-                                        {{ lesson['subject'] }}
-                                        ({{ lesson['building'] }}) <br>
-                                        {% if lesson['test'] != 'None' %}
-                                        <span style="color: red;">{{ lesson['test'] }}</span>
-                                        {% endif %}
+                {% if user.user_type == 'teacher' %}
+                  <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editTestModal-{{ lesson['lesson_id'] }}">✏️</button>
 
-                                    {% else %}
-
-                                        {# Jeśli nie ma zajęć o danej godzinie i dniu, wstaw pustą komórkę #}
-                                    {% endif %}
-
-                                {% endfor %}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                  <!-- Modal -->
+                  <div class="modal fade" id="editTestModal-{{ lesson['lesson_id'] }}" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <form method="post" action="{{ url_for('timetable.edit_test', lesson_id=lesson['lesson_id']) }}">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Edit Test/Note</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                          </div>
+                          <div class="modal-body">
+                            <input type="text" class="form-control" name="test" value="{{ lesson['test'] if lesson['test'] != 'None' else '' }}" placeholder="e.g. Quiz on Algebra">
+                          </div>
+                          <div class="modal-footer">
+                            <button class="btn btn-primary" type="submit">Save</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+</div>
 </main>
 {% endblock %}
