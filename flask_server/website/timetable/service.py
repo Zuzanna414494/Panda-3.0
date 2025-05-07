@@ -11,60 +11,43 @@ def getLessons(user_id_l, user_type):
                            host=current_app.config["DATABASE_HOST"],
                            port=current_app.config["DATABASE_PORT"])
     cur = con.cursor()
-    if user_type == 'student' or user_type == 'admin':
-        cur.execute(
-            "SELECT su.subject_name, l.day_of_week, l.start_time, l.end_time, l.building, l.test "
-            "FROM lessons l "
-            "JOIN subjects su USING(subject_id) "
-            "JOIN classes c USING(class_name) "
-            "JOIN students st USING(class_name) "
-            "WHERE st.student_id = %(user_id_l)s",
-            {'user_id_l': user_id_l}
-        )
-    elif user_type == 'teacher':
-        cur.execute(
-            "SELECT su.subject_name, l.day_of_week, l.start_time, l.end_time, l.building, l.test "
-            "FROM lessons l "
-            "JOIN subjects su USING(subject_id) "
-            "JOIN teachers t USING(teacher_id) "
-            "WHERE t.teacher_id = %(user_id_l)s",
-            {'user_id_l': user_id_l}
-        )
-    else:
-        """
-        child = None
-        child = Students.query.filter_by(student_id=current_user.parent[0].student_id).first()
-        user_id_l=child.student_id
-        """
-        cur.execute(
-            "SELECT su.subject_name, l.day_of_week, l.start_time, l.end_time, l.building, l.test "
-            "FROM lessons l "
-            "JOIN subjects su USING(subject_id) "
-            "JOIN classes c USING(class_name) "
-            "JOIN students st USING(class_name) "
-            "WHERE st.student_id = %(user_id_l)s",
-            {'user_id_l': user_id_l}
-        )
 
+    query = """
+        SELECT l.lesson_id, su.subject_name, l.day_of_week, l.start_time, l.end_time, l.building, l.test
+        FROM lessons l
+        JOIN subjects su ON l.subject_id = su.subject_id
+        JOIN students st ON st.class_name = su.class_name
+        WHERE st.student_id = %(user_id)s
+    """
+
+    if user_type == 'teacher':
+        query = """
+            SELECT l.lesson_id, su.subject_name, l.day_of_week, l.start_time, l.end_time, l.building, l.test
+            FROM lessons l
+            JOIN subjects su ON l.subject_id = su.subject_id
+            WHERE su.teacher_id = %(user_id)s
+        """
+
+    cur.execute(query, {'user_id': user_id_l})
     lessons_data = cur.fetchall()
     cur.close()
     con.close()
 
     zajecia = []
-
-    for line in lessons_data:
-        line_str = ', '.join(map(str, line))
-        subject, day_of_week, start_time, end_time, building, test = line_str.split(", ")
+    for row in lessons_data:
         lesson = {
-            "subject": subject,
-            "day_of_week": day_of_week,
-            "start_time": start_time[:-3],
-            "end_time": end_time[:-3],
-            "building": building,
-            "test": test
+            "lesson_id": row[0],
+            "subject": row[1],
+            "day_of_week": row[2],
+            "start_time": row[3].strftime('%H:%M'),
+            "end_time": row[4].strftime('%H:%M'),
+            "building": row[5],
+            "test": row[6]
         }
         zajecia.append(lesson)
+
     return zajecia
+
 
 def getTeacherLessons(teacher_id):
     teacher = Teachers.query.get(teacher_id)
@@ -90,3 +73,37 @@ def getTeacherLessons(teacher_id):
 
     return lesson_info_list
 
+def getTeacherLessons(teacher_id):
+    con = psycopg2.connect(database=current_app.config["DATABASE_NAME"],
+                           user=current_app.config["DATABASE_USER"],
+                           password=current_app.config["DATABASE_PASSWORD"],
+                           host=current_app.config["DATABASE_HOST"],
+                           port=current_app.config["DATABASE_PORT"])
+    cur = con.cursor()
+
+    query = """
+        SELECT l.lesson_id, su.subject_name, l.day_of_week, l.start_time, l.end_time, l.building, l.test
+        FROM lessons l
+        JOIN subjects su ON l.subject_id = su.subject_id
+        WHERE su.teacher_id = %(teacher_id)s
+    """
+
+    cur.execute(query, {'teacher_id': teacher_id})
+    lessons_data = cur.fetchall()
+    cur.close()
+    con.close()
+
+    lesson_info_list = []
+    for row in lessons_data:
+        lesson_info = {
+            "lesson_id": row[0],
+            "subject": row[1],
+            "day_of_week": row[2],
+            "start_time": row[3].strftime('%H:%M'),
+            "end_time": row[4].strftime('%H:%M'),
+            "building": row[5],
+            "test": row[6]
+        }
+        lesson_info_list.append(lesson_info)
+
+    return lesson_info_list
