@@ -49,29 +49,29 @@ def getLessons(user_id_l, user_type):
     return zajecia
 
 
-def getTeacherLessons(teacher_id):
-    teacher = Teachers.query.get(teacher_id)
-
-    subjects = teacher.subjects
-
-    lesson_info_list = []
-
-    for subject in subjects:
-        lessons = Lessons.query.filter_by(subject_id=subject.subject_id).all()
-        for lesson in lessons:
-            if lesson.test==None:
-                lesson.test=" "
-            lesson_info = {
-                "subject": subject.subject_name,
-                "day_of_week": lesson.day_of_week,
-                "start_time": lesson.start_time.strftime('%H:%M'),
-                "end_time": lesson.end_time.strftime('%H:%M'),
-                "building":lesson.building,
-                "test": lesson.test
-            }
-            lesson_info_list.append(lesson_info)
-
-    return lesson_info_list
+# def getTeacherLessons(teacher_id):
+#     teacher = Teachers.query.get(teacher_id)
+#
+#     subjects = teacher.subjects
+#
+#     lesson_info_list = []
+#
+#     for subject in subjects:
+#         lessons = Lessons.query.filter_by(subject_id=subject.subject_id).all()
+#         for lesson in lessons:
+#             if lesson.test==None:
+#                 lesson.test=" "
+#             lesson_info = {
+#                 "subject": subject.subject_name,
+#                 "day_of_week": lesson.day_of_week,
+#                 "start_time": lesson.start_time.strftime('%H:%M'),
+#                 "end_time": lesson.end_time.strftime('%H:%M'),
+#                 "building":lesson.building,
+#                 "test": lesson.test
+#             }
+#             lesson_info_list.append(lesson_info)
+#
+#     return lesson_info_list
 
 def getTeacherLessons(teacher_id):
     con = psycopg2.connect(database=current_app.config["DATABASE_NAME"],

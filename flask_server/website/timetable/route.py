@@ -90,14 +90,19 @@ def add_lesson():
     try:
         subject_id = int(request.form['subject_id'])
         day_of_week = request.form['day_of_week']
-        start_time_str = request.form['start_time']
-        end_time_str = request.form['end_time']
+        time_slot = request.form['time_slot']
         building = request.form['building']
         test = request.form['test'] if request.form['test'] else None
+
+        start_time_str, end_time_str = time_slot.split('-')
 
         dummy_date = "1900-01-01"
         start_time = datetime.strptime(f"{dummy_date} {start_time_str}", "%Y-%m-%d %H:%M")
         end_time = datetime.strptime(f"{dummy_date} {end_time_str}", "%Y-%m-%d %H:%M")
+
+        if start_time >= end_time:
+            flash("Start time must be before end time.", category="error")
+            return redirect(request.referrer)
 
         new_lesson = Lessons(
             subject_id=subject_id,
