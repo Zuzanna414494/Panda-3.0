@@ -7,6 +7,7 @@ from flask_server.website.classes.model import Classes
 from flask_server.website.timetable.model import Subjects
 from flask_server.website.grades.model import Grades
 from flask_server.website.authorization.model import Students
+from flask import request, render_template
 
 grades = Blueprint('grades',
                           __name__,
@@ -38,112 +39,61 @@ def getGrades():
 
 
 # endpoint wyświetlający oceny danej klasy (dla nauczyciela albo admina), pobiera nazwę danej klasy
+
 @grades.route('<string:class_name>', methods=["GET", "POST"])
+@login_required
 def grades_teacher(class_name):
-    # wyszukanie modelu klasy
-    clas = Classes.query.get_or_404(class_name)
-    # pobrane nazw wszystkich klas, żeby można było wybrać, do strony z ocenami któej klasy chce się przejść
-    classes = getClasses()
-    # dla nauczyciela pobranie tych przedmiotów, których uczy w danej klasie
+    # Pobierz klasę (przykładowo, dostosuj do swojej logiki)
+    clas = Classes.query.filter_by(class_name=class_name).first()
+
+    # Pobierz przedmioty nauczane w tej klasie (dla nauczyciela lub admina)
     if current_user.user_type == 'teacher':
-        subjects = Subjects.query.filter_by(teacher_id=current_user.user_id, class_name=class_name)
-    # dla admina pobranie wszystkich przedmiotów danej klasy
-    if current_user.user_type == 'admin':
-        subjects = Subjects.query.filter_by(class_name=class_name)
-    # pobranie modeli uczniów danej klasy
-    students = Students.query.filter_by(class_name=class_name)
+        subjects = Subjects.query.filter_by(teacher_id=current_user.user_id, class_name=class_name).all()
+    else:  # admin
+        subjects = Subjects.query.filter_by(class_name=class_name).all()
 
-    if request.method == "POST":
+    # Pobierz wszystkie klasy do wyboru (np. dla dropdowna)
+    classes = Classes.query.all()
 
-        # pobranie informacji o nowo dodanej albo zmienionej ocenie
-        grade = request.form.get("type")
-        weight = request.form.get("weight")
-        description = request.form.get("description")
+    # Pobierz uczniów w klasie
+    students = Students.query.filter_by(class_name=class_name).all()
 
-        # jeśli akcja to usuwanie
-        if request.form.get("delete"):
-            # wyszukanie danej oceny w bazie na podstawie jej id i usunięcie
-            Grades.query.filter_by(grade_id=request.form.get("grade_id_delete")).delete()
-            db.session.commit()
-            # komunikat o poprawnie wykonanej akcji
-            flash('Grade deleted!', category='success')
+    # Funkcja do obliczenia średniej ocen ucznia dla tej klasy (i nauczyciela jeśli dotyczy)
+    def student_average(student):
+        relevant_grades = []
+        for grade in student.grades:
+            # Sprawdzamy czy ocena jest z przedmiotu tej klasy
+            if grade.subject.class_name == class_name:
+                # Jeśli nauczyciel, to tylko jego przedmioty
+                if current_user.user_type == 'teacher':
+                    if grade.subject.teacher_id != current_user.user_id:
+                        continue
+                # Pomijamy oceny końcowe
+                if not grade.is_final:
+                    relevant_grades.append((grade.type, grade.weight))
+        if not relevant_grades:
+            return 0
+        weighted_sum = sum(g * w for g, w in relevant_grades)
+        weight_sum = sum(w for _, w in relevant_grades)
+        if weight_sum == 0:
+            return 0
+        return weighted_sum / weight_sum
 
-        else:
-            # jeśli akcja zmiana zwykłej oceny
-            if request.form.get("change"):
-                # sprawdzenie, czy poprawnie wprowadzono dane
-                if not grade:
-                    flash('Empty place!', category='error')
-                elif int(grade) > 6 or int(grade) < 1:
-                    flash('Wrong grade!', category='error')
-                else:
-                    # wyszukanie danej oceny w bazie na podstawie jej id i jej edycja
-                    grade = Grades.query.filter_by(grade_id=request.form.get("grade_id")).first()
-                    grade.type = request.form.get("type")
-                    grade.weight = request.form.get("weight")
-                    grade.description = request.form.get("description")
-                    db.session.commit()
-                    flash('Grade changed!', category='success')
+    # Pobierz parametr sortowania z URL (domyślnie rosnąco)
+    sort_order = request.args.get('sort', 'asc')
 
-            else:
-                # dodanie albo zmiana oceny końcowej
-                if request.form.get("is_final"):
-                    # sprawdzenie, czy poprawnie wprowadzono dane
-                    if not grade:
-                        flash('Empty place!', category='error')
-                    elif int(grade) > 6 or int(grade) < 1:
-                        flash('Wrong grade!', category='error')
-                    else:
+    # Sortuj uczniów po średniej ocen
+    students = list(students)
+    students.sort(key=student_average, reverse=(sort_order == 'desc'))
 
-                        # jeśli uczeń nie posiada oceny końcowej z danego przedmiotu to dodanie nowej
-                        if int(request.form.get("final_id")) == 0:
-                            is_final = True
-                            weight = 100
-                            description = "Final"
-                            new_grade = Grades(
-                                subject_id=request.form["subject_id"],
-                                type=grade,
-                                weight=weight,
-                                student_id=request.form["student_id"],
-                                description=description,
-                                add_date=datetime.now(),
-                                is_final=is_final)
-                            db.session.add(new_grade)
-                            db.session.commit()
-                            flash('Grade added!', category='success')
+    return render_template(
+        'grades_teacher.html',
+        user=current_user,
+        clas=clas,
+        subjects=subjects,
+        classes=classes,
+        students=students,
+        sort_order=sort_order,
+        student_average=student_average
+    )
 
-                        # jeśli uczeń posiada, to jej edycja
-                        else:
-                            grade = Grades.query.filter_by(grade_id=request.form.get("final_id")).first()
-                            grade.type = request.form.get("type")
-                            grade.add_date = datetime.now()
-                            db.session.commit()
-                            flash('Grade changed!', category='success')
-
-                # dodanie nowej zwykłej oceny
-                else:
-                    # sprawdzenie, czy poprawnie wprowadzono dane
-                    if not grade or not weight or not description:
-                        flash('Empty place!', category='error')
-                    elif int(grade) > 6 or int(grade) < 1:
-                        flash('Wrong grade!', category='error')
-                    else:
-                        # wprowadzenie nowej oceny do bazy
-                        is_final = False
-                        new_grade = Grades(
-                            subject_id=request.form["subject_id"],
-                            type=grade,
-                            weight=weight,
-                            student_id=request.form["student_id"],
-                            description=description,
-                            add_date=datetime.now(),
-                            is_final=is_final)
-                        db.session.add(new_grade)
-                        db.session.commit()
-                        flash('Grade added!', category='success')
-
-        # powrót do strony z ocenami danej klasy
-        return redirect(url_for('grades.grades_teacher', class_name=class_name))
-
-    return render_template('grades_teacher.html', user=current_user, clas=clas, subjects=subjects,
-                           classes=classes, students=students)

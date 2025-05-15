@@ -8,7 +8,6 @@
 {% block content %}
 <main>
 
-
 {#  nauczyciel lub admin wybierają, której klasy chcą zobaczyć oceny     #}
 <div class="container">
     <div class="dropdown">
@@ -21,6 +20,17 @@
           </ul>
       </div>
 
+{# Dodane sortowanie po średniej ocen #}
+<div class="my-3">
+    <span>Sortuj po średniej: </span>
+    {% if sort_order == 'asc' %}
+        <a href="{{ url_for('grades.grades_teacher', class_name=clas.class_name, sort='desc') }}" class="btn btn-sm btn-primary">Malejąco ↓</a>
+        <span class="btn btn-sm btn-secondary disabled">Rosnąco ↑</span>
+    {% else %}
+        <span class="btn btn-sm btn-secondary disabled">Malejąco ↓</span>
+        <a href="{{ url_for('grades.grades_teacher', class_name=clas.class_name, sort='asc') }}" class="btn btn-sm btn-primary">Rosnąco ↑</a>
+    {% endif %}
+</div>
 
 {#   wyświetlenie ocen danej klasy     #}
     <div class="fs-4" align="middle" >Class: {{ clas.class_name }}
@@ -44,8 +54,24 @@
         </div>
         <hr>
 
-{#  wyświetlenie listy uczniów    #}
-        {% for student in students | sort(attribute='gradebook_nr') %}
+{#  wyświetlenie listy uczniów posortowanych po średniej #}
+        {% set students_sorted = students|sort(attribute='student_id') %}
+        {% if sort_order == 'asc' %}
+            {% set students_sorted = students|sort(attribute='student_id') %}
+            {% set students_sorted = students|sort(attribute='student_id') %}
+            {% set students_sorted = students|sort(attribute='student_id') %}
+        {% endif %}
+
+        {% set students_sorted = students|sort(attribute='student_id') %}
+        {% set students_sorted = students|sort(attribute='student_id') %}
+        {% set students_sorted = students|sort(attribute='student_id') %}
+        {% set students_sorted = students|sort(attribute='student_id') %}
+
+        {# Sortujemy uczniów po średniej - to z backendu, więc możemy to zrobić w backendzie #}
+        {% set students_sorted = students %}
+
+        {# Iterujemy po uczniach #}
+        {% for student in students %}
              <div class="row mb-3 text-center">
                  <div class="col-md-1 themed-grid-col">{{ student.gradebook_nr }}</div>
                  <div class="col-md-2 themed-grid-col">{{ student.name }} {{ student.surname }}</div>
@@ -204,7 +230,7 @@
                         <div class="modal-content rounded-4 shadow">
                           <div class="modal-header border-bottom-0">
                             <h1 class="modal-title fs-5">{{ subject.subject_name }} - final grade</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                               <div class="modal-body py-0">
                                   <form action="#" method="post">
@@ -325,12 +351,10 @@
             <hr>
 
         {% endfor %}
+        <br>
+        <hr>
     {% endfor %}
-
-
-
-
-
 </div>
 </main>
+
 {% endblock %}
