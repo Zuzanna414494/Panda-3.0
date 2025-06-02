@@ -1,0 +1,417 @@
+{#  strona do zarządzania notatkami behawioralnymi dla nauczyciela i admina  #}
+
+{% extends "base.html" %}
+{% block title %}Behavioral Notes {{ clas.class_name }}{% endblock %}
+
+{% set active_page = "behavioral_notes" %}
+
+{% block content %}
+<main>
+
+{#  nauczyciel lub admin wybierają, której klasy chcą zobaczyć notatki     #}
+<div class="container">
+    <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Choose class</button>
+          <ul class="dropdown-menu">
+              {% for class in classes %}
+                      <li><a class="dropdown-item" href="{{ url_for('behavioral_notes.behavioral_notes_teacher', class_name=class['class_name'])}}">{{ class['class_name'] }}</a></li>
+              {% endfor %}
+          </ul>
+      </div>
+
+{# Filtry i sortowanie #}
+<div class="my-3">
+    <div class="row">
+        <div class="col-md-3">
+            <select class="form-select" id="behaviorTypeFilter">
+                <option value="">All types</option>
+                <option value="positive">Positive</option>
+                <option value="negative">Negative</option>
+                <option value="neutral">Neutral</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select class="form-select" id="categoryFilter">
+                <option value="">All categories</option>
+                <option value="discipline">Discipline</option>
+                <option value="participation">Participation</option>
+                <option value="homework">Homework</option>
+                <option value="social_behavior">Social Behavior</option>
+                <option value="academic_performance">Academic Performance</option>
+                <option value="attendance">Attendance</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="date" class="form-control" id="dateFromFilter" placeholder="From date">
+        </div>
+        <div class="col-md-3">
+            <input type="date" class="form-control" id="dateToFilter" placeholder="To date">
+        </div>
+    </div>
+</div>
+
+{#   wyświetlenie notatek danej klasy     #}
+    <div class="fs-4" align="middle" >Class: {{ clas.class_name }}
+        <br> Profile: {{ clas.class_profile }}
+    </div>
+    <br>
+
+    <div class="row mb-3 text-center">
+        <div class="col-md-1 themed-grid-col"><b>NUMBER</b></div>
+        <div class="col-md-2 themed-grid-col"><b>STUDENT</b></div>
+        <div class="col-md-4 themed-grid-col"><b>RECENT NOTES</b></div>
+        <div class="col-md-2 themed-grid-col"><b>BEHAVIOR SCORE</b></div>
+        <div class="col-md-2 themed-grid-col"><b>STATISTICS</b></div>
+        <div class="col-md-1 themed-grid-col"><b>NEW NOTE</b></div>
+    </div>
+    <hr>
+
+    {# Iterujemy po uczniach #}
+    {% for student in students %}
+         <div class="row mb-3 text-center student-row">
+             <div class="col-md-1 themed-grid-col">{{ student.gradebook_nr }}</div>
+             <div class="col-md-2 themed-grid-col">{{ student.name }} {{ student.surname }}</div>
+             <div class="col-md-4 themed-grid-col">
+
+{#  wyświetlenie ostatnich 3 notatek danego ucznia     #}
+                  {% for note in student.behavioral_notes | sort(attribute='created_at', reverse=true) | list | slice(3) %}
+                    <button type="button" class="btn btn-sm
+                        {% if note.behavior_type.value == 'positive' %}btn-success
+                        {% elif note.behavior_type.value == 'negative' %}btn-danger
+                        {% else %}btn-secondary
+                        {% endif %}"
+                        data-bs-toggle="modal" data-bs-target="#note-modal-{{ student.student_id }}-{{ loop.index }}">
+                        {{ note.title[:20] }}{% if note.title|length > 20 %}...{% endif %}
+                    </button>
+
+{#  modal do wyświetlania szczegółów notatki #}
+                        <div class="modal fade" id="note-modal-{{ student.student_id }}-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content rounded-4 shadow">
+                              <div class="modal-header border-bottom-0">
+                                <h1 class="modal-title fs-5">{{ note.title }}</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                                  <div class="modal-body py-0">
+                                    <p><strong>Date:</strong> {{ note.incident_date.strftime('%d.%m.%Y') }}</p>
+                                    <p><strong>Subject:</strong>
+                                        {% if note.subject %}
+                                            {{ note.subject.subject_name }}
+                                        {% else %}
+                                            General
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>Type:</strong>
+                                        {% if note.behavior_type.value == 'positive' %}
+                                            <span class="badge bg-success">Positive</span>
+                                        {% elif note.behavior_type.value == 'negative' %}
+                                            <span class="badge bg-danger">Negative</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Neutral</span>
+                                        {% endif %}
+                                    </p>
+                                    <p><strong>Category:</strong> <span class="badge bg-info">{{ note.category.value.replace('_', ' ').title() }}</span></p>
+                                    <p><strong>Description:</strong> {{ note.description }}</p>
+                                    {% if note.behavior_score %}
+                                        <p><strong>Score:</strong> {{ note.behavior_score }}/5</p>
+                                    {% endif %}
+                                    <br>
+
+{#  możliwość edycji notatki  #}
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#note-edit-modal-{{ student.student_id }}-{{ loop.index }}">Edit</button>
+
+{#  możliwość usunięcia notatki   #}
+                                    <form action="#" method="post" style="display: inline;">
+                                        <input type="hidden" name="delete" value="true"/>
+                                        <input type="hidden" name="note_id_delete" value="{{ note.id }}"/>
+                                        <button class="btn btn-danger" type="submit" onclick="return confirm('Are you sure you want to delete this note?')">Delete</button>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                        </div>
+
+{#  modal do edycji notatki  #}
+                    <div class="modal fade" id="note-edit-modal-{{ student.student_id }}-{{ loop.index }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content rounded-4 shadow">
+                          <div class="modal-header border-bottom-0">
+                            <h1 class="modal-title fs-5">Edit Behavioral Note</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                              <div class="modal-body py-0">
+                                  <form action="#" method="post">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="title" name="title" value="{{ note.title }}" placeholder="Title"/>
+                                            <label for="title">Title</label>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="behavior_type" name="behavior_type">
+                                                <option value="positive" {% if note.behavior_type.value == 'positive' %}selected{% endif %}>Positive</option>
+                                                <option value="negative" {% if note.behavior_type.value == 'negative' %}selected{% endif %}>Negative</option>
+                                                <option value="neutral" {% if note.behavior_type.value == 'neutral' %}selected{% endif %}>Neutral</option>
+                                            </select>
+                                            <label for="behavior_type">Behavior Type</label>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="category" name="category">
+                                                <option value="discipline" {% if note.category.value == 'discipline' %}selected{% endif %}>Discipline</option>
+                                                <option value="participation" {% if note.category.value == 'participation' %}selected{% endif %}>Participation</option>
+                                                <option value="homework" {% if note.category.value == 'homework' %}selected{% endif %}>Homework</option>
+                                                <option value="social_behavior" {% if note.category.value == 'social_behavior' %}selected{% endif %}>Social Behavior</option>
+                                                <option value="academic_performance" {% if note.category.value == 'academic_performance' %}selected{% endif %}>Academic Performance</option>
+                                                <option value="attendance" {% if note.category.value == 'attendance' %}selected{% endif %}>Attendance</option>
+                                                <option value="other" {% if note.category.value == 'other' %}selected{% endif %}>Other</option>
+                                            </select>
+                                            <label for="category">Category</label>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <textarea class="form-control" id="description" name="description" style="height: 100px" placeholder="Description">{{ note.description }}</textarea>
+                                            <label for="description">Description</label>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <select class="form-select" id="behavior_score" name="behavior_score">
+                                                <option value="">No score</option>
+                                                <option value="1" {% if note.behavior_score == 1 %}selected{% endif %}>1 - Very Poor</option>
+                                                <option value="2" {% if note.behavior_score == 2 %}selected{% endif %}>2 - Poor</option>
+                                                <option value="3" {% if note.behavior_score == 3 %}selected{% endif %}>3 - Average</option>
+                                                <option value="4" {% if note.behavior_score == 4 %}selected{% endif %}>4 - Good</option>
+                                                <option value="5" {% if note.behavior_score == 5 %}selected{% endif %}>5 - Excellent</option>
+                                            </select>
+                                            <label for="behavior_score">Behavior Score</label>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <input type="date" class="form-control" id="incident_date" name="incident_date" value="{{ note.incident_date }}" placeholder="Incident Date"/>
+                                            <label for="incident_date">Incident Date</label>
+                                        </div>
+
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="parent_notified" name="parent_notified" {% if note.parent_notified %}checked{% endif %}>
+                                            <label class="form-check-label" for="parent_notified">
+                                                Parent Notified
+                                            </label>
+                                        </div>
+
+                                        <div class="form-check mb-3">
+                                            <input class="form-check-input" type="checkbox" id="requires_followup" name="requires_followup" {% if note.requires_followup %}checked{% endif %}>
+                                            <label class="form-check-label" for="requires_followup">
+                                                Requires Follow-up
+                                            </label>
+                                        </div>
+
+                                        <input type="hidden" name="note_id" value="{{ note.id }}"/>
+                                        <input type="hidden" name="edit" value="true"/>
+                                    <button class="btn btn-primary w-100 py-2" type="submit">Update Note</button>
+                                  </form>
+                              </div>
+                            </div>
+                          </div>
+                    </div>
+                  {% endfor %}
+
+            </div>
+
+{#  wyświetlanie średniej oceny zachowania ucznia   #}
+            <div class="col-md-2 themed-grid-col">
+                {% set total_score = student.behavioral_notes | selectattr('behavior_score') | map(attribute='behavior_score') | sum %}
+                {% set count_score = student.behavioral_notes | selectattr('behavior_score') | list | length %}
+                {% if count_score > 0 %}
+                    {% set avg_score = (total_score / count_score) | round(1) %}
+                    <span class="badge
+                        {% if avg_score >= 4 %}bg-success
+                        {% elif avg_score >= 3 %}bg-warning
+                        {% else %}bg-danger
+                        {% endif %}">
+                        {{ avg_score }}/5
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary">No scores</span>
+                {% endif %}
+            </div>
+
+{#  statystyki zachowania     #}
+             <div class="col-md-2 themed-grid-col">
+                {% set positive_count = student.behavioral_notes | selectattr('behavior_type.value', 'equalto', 'positive') | list | length %}
+                {% set negative_count = student.behavioral_notes | selectattr('behavior_type.value', 'equalto', 'negative') | list | length %}
+                {% set neutral_count = student.behavioral_notes | selectattr('behavior_type.value', 'equalto', 'neutral') | list | length %}
+
+                <small>
+                    <span class="badge bg-success">+{{ positive_count }}</span>
+                    <span class="badge bg-danger">-{{ negative_count }}</span>
+                    <span class="badge bg-secondary">={{ neutral_count }}</span>
+                </small>
+            </div>
+
+            <div class="col-md-1 themed-grid-col">
+                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#note-add-modal-{{ student.student_id }}">Add</button>
+
+{#  modal do dodania nowej notatki behawioralnej     #}
+                <div class="modal fade" id="note-add-modal-{{ student.student_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content rounded-4 shadow">
+                      <div class="modal-header border-bottom-0">
+                        <h1 class="modal-title fs-5">Add Behavioral Note - {{ student.name }} {{ student.surname }}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                          <div class="modal-body py-0">
+                              <form action="#" method="post">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="title" name="title" placeholder="Title" required/>
+                                        <label for="title">Title</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="behavior_type" name="behavior_type" required>
+                                            <option value="">Choose type...</option>
+                                            <option value="positive">Positive</option>
+                                            <option value="negative">Negative</option>
+                                            <option value="neutral">Neutral</option>
+                                        </select>
+                                        <label for="behavior_type">Behavior Type</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="category" name="category" required>
+                                            <option value="">Choose category...</option>
+                                            <option value="discipline">Discipline</option>
+                                            <option value="participation">Participation</option>
+                                            <option value="homework">Homework</option>
+                                            <option value="social_behavior">Social Behavior</option>
+                                            <option value="academic_performance">Academic Performance</option>
+                                            <option value="attendance">Attendance</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                        <label for="category">Category</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <textarea class="form-control" id="description" name="description" style="height: 100px" placeholder="Description" required></textarea>
+                                        <label for="description">Description</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="subject_id" name="subject_id">
+                                            <option value="">General (no subject)</option>
+                                            {% for subject in subjects %}
+                                                <option value="{{ subject.subject_id }}">{{ subject.subject_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="subject_id">Subject</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="behavior_score" name="behavior_score">
+                                            <option value="">No score</option>
+                                            <option value="1">1 - Very Poor</option>
+                                            <option value="2">2 - Poor</option>
+                                            <option value="3">3 - Average</option>
+                                            <option value="4">4 - Good</option>
+                                            <option value="5">5 - Excellent</option>
+                                        </select>
+                                        <label for="behavior_score">Behavior Score</label>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <input type="date" class="form-control" id="incident_date" name="incident_date" placeholder="Incident Date" required/>
+                                        <label for="incident_date">Incident Date</label>
+                                    </div>
+
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="parent_notified" name="parent_notified">
+                                        <label class="form-check-label" for="parent_notified">
+                                            Parent Notified
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="requires_followup" name="requires_followup">
+                                        <label class="form-check-label" for="requires_followup">
+                                            Requires Follow-up
+                                        </label>
+                                    </div>
+
+                                    <input type="hidden" name="student_id" value="{{ student.student_id }}"/>
+                                    <input type="hidden" name="add" value="true"/>
+                                <button class="btn btn-primary w-100 py-2" type="submit">Add Note</button>
+                              </form>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+         </div>
+         <hr>
+    {% endfor %}
+</div>
+
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const behaviorTypeFilter = document.getElementById('behaviorTypeFilter');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const dateFromFilter = document.getElementById('dateFromFilter');
+        const dateToFilter = document.getElementById('dateToFilter');
+        const studentRows = document.querySelectorAll('.student-row');
+
+        function filterRows() {
+            studentRows.forEach(row => {
+                let showRow = true;
+                const notes = row.querySelectorAll('.btn-sm');
+                let rowVisible = false; // Assume row is not visible initially
+
+                notes.forEach(note => {
+                    const behaviorType = note.classList.contains('btn-success') ? 'positive' :
+                                         note.classList.contains('btn-danger') ? 'negative' : 'neutral';
+                    const category = note.nextElementSibling.querySelector('.badge').textContent.trim().toLowerCase();
+                    const noteDate = new Date(note.nextElementSibling.querySelector('p:first-of-type').textContent.split(': ')[1]);
+
+                    // Behavior Type Filter
+                    if (behaviorTypeFilter.value && behaviorTypeFilter.value !== behaviorType) {
+                        return; // Skip to next note if this one doesn't match
+                    }
+
+                    // Category Filter
+                    if (categoryFilter.value && categoryFilter.value !== category) {
+                        return; // Skip to next note if this one doesn't match
+                    }
+
+                    // Date From Filter
+                    if (dateFromFilter.value) {
+                        const fromDate = new Date(dateFromFilter.value);
+                        if (noteDate < fromDate) {
+                            return; // Skip to next note if this one is before the filter
+                        }
+                    }
+
+                    // Date To Filter
+                    if (dateToFilter.value) {
+                        const toDate = new Date(dateToFilter.value);
+                        if (noteDate > toDate) {
+                            return; // Skip to next note if this one is after the filter
+                        }
+                    }
+
+                    rowVisible = true; // At least one note matches the filters
+                });
+
+                showRow = showRow && rowVisible; // Only show if at least one note matches
+                row.style.display = showRow ? '' : 'none'; // Show or hide row
+            });
+        }
+
+        behaviorTypeFilter.addEventListener('change', filterRows);
+        categoryFilter.addEventListener('change', filterRows);
+        dateFromFilter.addEventListener('change', filterRows);
+        dateToFilter.addEventListener('change', filterRows);
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,168 @@
+{# wyświetlanie notatek behawioralnych ucznia #}
+
+{% extends "base.html" %}
+{% block title %}Behavioral Notes{% endblock %}
+
+{% set active_page = "behavioral_notes" %}
+
+{% block content %}
+<main>
+  <div class="container">
+
+{# nauczyciel lub admin wybierają której klasy chcą zobaczyć notatki #}
+  {% if user.user_type == 'teacher' or user.user_type == 'admin' %}
+
+      <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Choose class</button>
+          <ul class="dropdown-menu">
+              {% for class in classes %}
+                      <li><a class="dropdown-item" href="{{ url_for('behavioral_notes.behavioral_notes_teacher', class_name=class.class_name) }}">{{ class.class_name }}</a></li>
+              {% endfor %}
+          </ul>
+      </div>
+
+  {% else %}
+
+{# wyświetlenie notatek behawioralnych ucznia #}
+  {% if user.user_type == 'student'%}
+        <h1>Your behavioral notes</h1>
+  {% else %}
+        <h1>Your child's behavioral notes</h1>
+  {% endif %}
+
+    <br>
+
+    {# Statystyki #}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Summary</h5>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <div class="badge bg-success fs-6 p-2">
+                                Positive: {{ notes|selectattr("behavior_type", "equalto", "positive")|list|length }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="badge bg-warning fs-6 p-2">
+                                Neutral: {{ notes|selectattr("behavior_type", "equalto", "neutral")|list|length }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="badge bg-danger fs-6 p-2">
+                                Negative: {{ notes|selectattr("behavior_type", "equalto", "negative")|list|length }}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="badge bg-info fs-6 p-2">
+                                Total: {{ notes|length }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3 text-center">
+        <div class="col-md-2 themed-grid-col"><b>DATE</b></div>
+        <div class="col-md-2 themed-grid-col"><b>TYPE</b></div>
+        <div class="col-md-2 themed-grid-col"><b>CATEGORY</b></div>
+        <div class="col-md-3 themed-grid-col"><b>TITLE</b></div>
+        <div class="col-md-2 themed-grid-col"><b>TEACHER</b></div>
+        <div class="col-md-1 themed-grid-col"><b>SCORE</b></div>
+    </div>
+    <hr>
+
+{# wyświetlenie notatek behawioralnych #}
+    {% for note in notes %}
+        <div class="row mb-3 text-center">
+            <div class="col-md-2 themed-grid-col">{{ note.incident_date.strftime('%Y-%m-%d') }}</div>
+            <div class="col-md-2 themed-grid-col">
+                {% if note.behavior_type == 'positive' %}
+                    <span class="badge bg-success">{{ note.behavior_type.title() }}</span>
+                {% elif note.behavior_type == 'negative' %}
+                    <span class="badge bg-danger">{{ note.behavior_type.title() }}</span>
+                {% else %}
+                    <span class="badge bg-warning">{{ note.behavior_type.title() }}</span>
+                {% endif %}
+            </div>
+            <div class="col-md-2 themed-grid-col">
+                <span class="badge bg-secondary">{{ note.category.replace('_', ' ').title() }}</span>
+            </div>
+            <div class="col-md-3 themed-grid-col">
+                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#note-modal-{{ note.note_id }}">
+                    {{ note.title }}
+                </button>
+            </div>
+            <div class="col-md-2 themed-grid-col">{{ note.teacher.name if note.teacher else 'N/A' }}</div>
+            <div class="col-md-1 themed-grid-col">
+                {% if note.behavior_score %}
+                    <span class="badge {% if note.behavior_score >= 4 %}bg-success{% elif note.behavior_score >= 3 %}bg-warning{% else %}bg-danger{% endif %}">
+                        {{ note.behavior_score }}/5
+                    </span>
+                {% else %}
+                    -
+                {% endif %}
+            </div>
+        </div>
+
+{# Modal z szczegółami notatki #}
+        <div class="modal fade" id="note-modal-{{ note.note_id }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header border-bottom-0">
+                        <h1 class="modal-title fs-5">{{ note.title }}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body py-0">
+                        <p><strong>Type:</strong>
+                            {% if note.behavior_type == 'positive' %}
+                                <span class="badge bg-success">{{ note.behavior_type.title() }}</span>
+                            {% elif note.behavior_type == 'negative' %}
+                                <span class="badge bg-danger">{{ note.behavior_type.title() }}</span>
+                            {% else %}
+                                <span class="badge bg-warning">{{ note.behavior_type.title() }}</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Category:</strong> {{ note.category.replace('_', ' ').title() }}</p>
+                        <p><strong>Description:</strong> {{ note.description }}</p>
+                        <p><strong>Date:</strong> {{ note.incident_date.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Teacher:</strong> {{ note.teacher.name if note.teacher else 'N/A' }}</p>
+                        {% if note.subject %}
+                            <p><strong>Subject:</strong> {{ note.subject.subject_name }}</p>
+                        {% endif %}
+                        {% if note.behavior_score %}
+                            <p><strong>Behavior Score:</strong> {{ note.behavior_score }}/5</p>
+                        {% endif %}
+                        {% if note.requires_followup %}
+                            <p><strong>Requires Follow-up:</strong>
+                                {% if note.followup_completed %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </p>
+                        {% endif %}
+                        {% if note.parent_notified %}
+                            <p><strong>Parent Notified:</strong> {{ note.parent_notification_date.strftime('%Y-%m-%d %H:%M') if note.parent_notification_date else 'Yes' }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+    {% endfor %}
+
+    {% if notes|length == 0 %}
+        <div class="text-center">
+            <p class="fs-5">No behavioral notes found.</p>
+        </div>
+    {% endif %}
+
+  {% endif %}
+  </div>
+</main>
+{% endblock %}
