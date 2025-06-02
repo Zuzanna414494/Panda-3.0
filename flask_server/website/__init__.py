@@ -33,6 +33,7 @@ def create_app(config_name=None):
     from .announcements.route import announcements
     from .profile.route import profile
     from .messages.route import messages
+    from .behavioral_notes.route import behavioral_notes
 
     app.register_blueprint(authorization)
     app.register_blueprint(grades)
@@ -40,7 +41,7 @@ def create_app(config_name=None):
     app.register_blueprint(announcements)
     app.register_blueprint(profile)
     app.register_blueprint(messages)
-
+    app.register_blueprint(behavioral_notes)
 
     # deklaracja LoginManager do obsługi logowania i zapamiętywania zalogowanych użytkowników, sesji
     login_manager = LoginManager()
